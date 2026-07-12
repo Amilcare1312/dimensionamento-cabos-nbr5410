@@ -208,6 +208,30 @@ describe('dimensionarCabo — casos de referência', () => {
     expect(comCC.secaoMinimaCurtoCircuito).not.toBeNull()
   })
 
+  it('alerta quando o tempo de atuação do curto-circuito é irrealisticamente longo (> 5 s)', () => {
+    const r = dimensionarCabo(
+      entradaBase({
+        correnteProjetoA: 45,
+        numCondutoresCarregados: 3,
+        correnteCurtoCircuitoKA: 5,
+        tempoAtuacaoS: 45,
+      }),
+    )
+    expect(r.alertas.some((a) => a.mensagem.includes('incomum para curto-circuito'))).toBe(true)
+  })
+
+  it('não alerta sobre tempo de atuação quando ele está na faixa realista (≤ 5 s)', () => {
+    const r = dimensionarCabo(
+      entradaBase({
+        correnteProjetoA: 45,
+        numCondutoresCarregados: 3,
+        correnteCurtoCircuitoKA: 5,
+        tempoAtuacaoS: 1,
+      }),
+    )
+    expect(r.alertas.some((a) => a.mensagem.includes('incomum para curto-circuito'))).toBe(false)
+  })
+
   it('emite alerta quando a margem de folga da ampacidade é menor que 10%', () => {
     // corrente bem próxima da ampacidade de 2,5mm² (24A)
     const r = dimensionarCabo(entradaBase({ correnteProjetoA: 23, distanciaM: 5 }))

@@ -248,7 +248,7 @@ export function CircuitForm({
               }
             />
           </Campo>
-          <Campo label="Tempo de atuação (s)">
+          <Campo label="Tempo de atuação (s)" ajuda="Tipicamente < 5 s (ex.: 0,04 a 1 s para disjuntores)">
             <NumberInput
               value={valor.tempoAtuacaoS}
               min={0}

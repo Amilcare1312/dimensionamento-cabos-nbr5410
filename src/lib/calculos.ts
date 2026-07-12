@@ -352,6 +352,12 @@ export function dimensionarCabo(entrada: EntradaCircuito): ResultadoDimensioname
 
   let secaoMinimaCurtoCircuito: number | null = null
   if (entrada.correnteCurtoCircuitoKA && entrada.tempoAtuacaoS) {
+    if (entrada.tempoAtuacaoS > 5) {
+      alertas.push({
+        nivel: 'aviso',
+        mensagem: `Tempo de atuação de ${entrada.tempoAtuacaoS} s é incomum para curto-circuito — dispositivos de proteção normalmente interrompem em frações de segundo a poucos segundos, e a fórmula S = I×√t/k só é válida em regime adiabático (tipicamente t ≤ 5 s). Confira se o valor não deveria estar em milissegundos (ex.: 0,045 s) e se não foi confundido com o tempo de atuação de sobrecarga.`,
+      })
+    }
     secaoMinimaCurtoCircuito = calcularSecaoMinimaCurtoCircuito(
       entrada.material,
       entrada.isolacao,
