@@ -21,10 +21,11 @@ export function Campo({
 const inputBase =
   'rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100'
 
-export function NumberInput(
-  props: React.InputHTMLAttributes<HTMLInputElement> & { value: number | undefined },
-) {
-  return <input type="number" className={inputBase} {...props} />
+export function NumberInput({
+  value,
+  ...props
+}: React.InputHTMLAttributes<HTMLInputElement> & { value: number | undefined }) {
+  return <input type="number" className={inputBase} value={value ?? ''} {...props} />
 }
 
 export function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
