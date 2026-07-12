@@ -107,8 +107,11 @@ export default function App() {
       </main>
 
       <footer className="border-t border-slate-200 px-4 py-6 text-center text-xs text-slate-400 dark:border-slate-800">
-        Ferramenta de apoio ao dimensionamento — ABNT NBR 5410:2004. Não substitui a responsabilidade
-        técnica de um profissional habilitado.
+        <p>
+          Ferramenta de apoio ao dimensionamento — ABNT NBR 5410:2004. Não substitui a responsabilidade
+          técnica de um profissional habilitado.
+        </p>
+        <p className="mt-1">© 2026 Amilcare. Todos os direitos reservados.</p>
       </footer>
     </div>
   )

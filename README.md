@@ -35,3 +35,9 @@ npm run dev      # servidor de desenvolvimento
 npm test         # testes unitários (vitest)
 npm run build    # build de produção
 ```
+
+## Licença
+
+Copyright (c) 2026 Amilcare. Todos os direitos reservados. O código-fonte está
+publicamente visível para consulta, mas seu uso, cópia, modificação ou
+redistribuição não são permitidos sem autorização — veja [LICENSE](LICENSE).
