@@ -1,31 +1,49 @@
-# Dimensionamento de Cabos — NBR 5410
+# Controle Financeiro
 
-Aplicativo web para dimensionamento de condutores elétricos de baixa tensão
-conforme a ABNT NBR 5410:2004. Calcula a seção mínima do condutor a partir da
-corrente de projeto (ou da potência da carga), verifica a queda de tensão em
-função da distância do circuito, sugere o disjuntor de proteção coordenado e
-verifica a suportabilidade térmica em curto-circuito.
+Aplicativo web para controle financeiro de uma pequena empresa, com escrituração
+por **partidas dobradas**. Reproduz e amplia a planilha
+`Planilha_financeira_com_diario.xlsx`: o **Diário** é a entrada única de dados e
+alimenta automaticamente as Contas a Pagar, Contas a Receber, o Fluxo de Caixa e
+o **Dashboard**.
 
-Todo o cálculo roda no navegador — não há backend. As tabelas técnicas
-(ampacidade, fatores de correção de temperatura e agrupamento, impedância dos
-cabos) ficam em [`src/lib/tabelas.ts`](src/lib/tabelas.ts), separadas da
-lógica de cálculo em [`src/lib/calculos.ts`](src/lib/calculos.ts).
-
-> **Aviso:** os resultados são um apoio ao dimensionamento e não substituem a
-> responsabilidade técnica de um engenheiro eletricista habilitado. Os valores
-> tabelados foram digitalizados a partir de fontes técnicas públicas — confira
-> a edição vigente da norma antes de aplicar em projeto executivo.
+Tudo roda no navegador — não há backend. Os dados são persistidos em
+`localStorage` e podem ser exportados/importados em JSON. A lógica contábil
+(agregações, status, fluxo de caixa) fica em
+[`src/financeiro/calculos.ts`](src/financeiro/calculos.ts), separada da interface.
 
 ## Funcionalidades
 
-- Corrente de projeto a partir de corrente direta ou de potência (ativa/aparente) × tensão × fator de potência, para circuitos monofásicos, bifásicos e trifásicos.
-- Seleção visual do método de instalação (Tabela 33): eletroduto embutido em parede isolante, eletroduto aparente/embutido em alvenaria, fixação direta ao ar livre, diretamente enterrado, bandeja perfurada.
-- Seção mínima por capacidade de condução de corrente (Tabela 36), com fatores de correção de temperatura (Tabela 40) e agrupamento (Tabela 42).
-- Verificação de queda de tensão (ΔV) com elevação automática de seção quando ela é o fator limitante.
-- Seção mínima por norma (1,5 mm² iluminação / 2,5 mm² tomadas), coordenação com disjuntor padronizado e verificação térmica de curto-circuito.
-- Memorial de cálculo passo a passo, exportável em PDF.
-- Comparativo cobre × alumínio, comparação lado a lado entre métodos de instalação, e biblioteca de circuitos (resumo de quadro de distribuição) persistida no navegador.
+- **Preenchimento guiado**: escolha o tipo de transação (compra/despesa a prazo,
+  pagamento a fornecedor, venda/serviço a prazo, recebimento de cliente, despesa
+  ou receita à vista, folha de pagamento) e as partidas de débito/crédito são
+  geradas automaticamente. Há também um modo manual avançado para lançar partidas
+  livremente, sempre validando débito = crédito.
+- **Diário de lançamentos** com busca e remoção, exibindo cada partida contábil.
+- **Contas a Pagar** — consolidadas por fornecedor/categoria (contas 2.1.1, 2.1.2,
+  2.1.3), com saldo, próximo vencimento e status (Pago / Pendente / Vencido).
+- **Contas a Receber** — consolidadas por cliente (conta 1.1.3), com status
+  (Recebido / Pendente / Vencido).
+- **Fluxo de Caixa** mensal em regime de caixa (conta 1.1.2), classificado por
+  categoria, com resultado do período e saldo acumulado; saldo inicial ajustável.
+- **Dashboard** com KPIs (total a pagar/receber, saldo de caixa e resultado do
+  mês), gráfico de barras entradas × saídas com linha de saldo, distribuição por
+  status (rosca) e rankings das maiores contas.
+- **Plano de contas** de referência.
+- Exportar/importar dados (JSON), carregar dados de exemplo, limpar tudo.
 - Modo claro/escuro e layout responsivo.
+
+## Modelo contábil
+
+Cada transação é um lançamento com 2 ou mais linhas balanceadas (Σdébitos =
+Σcréditos). Os relatórios são derivados dos lançamentos:
+
+| Relatório          | Conta base        | Débito significa      | Crédito significa      |
+| ------------------ | ----------------- | --------------------- | ---------------------- |
+| Contas a Pagar     | 2.1.1/2.1.2/2.1.3 | pagamento efetuado    | obrigação incorrida    |
+| Contas a Receber   | 1.1.3             | NF emitida            | recebimento            |
+| Fluxo de Caixa     | 1.1.2             | entrada de caixa      | saída de caixa         |
+
+No Fluxo de Caixa, a categoria (`Categ. FC`) é registrada na linha da conta 1.1.2.
 
 ## Desenvolvimento
 
@@ -34,6 +52,7 @@ npm install
 npm run dev      # servidor de desenvolvimento
 npm test         # testes unitários (vitest)
 npm run build    # build de produção
+npm run lint     # oxlint
 ```
 
 ## Licença
