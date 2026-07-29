@@ -152,7 +152,7 @@ export default function AppFinanceiro() {
       </nav>
 
       <main className="mx-auto max-w-7xl px-4 pb-16 pt-4">
-        {aba === 'dashboard' && <Dashboard estado={estado} />}
+        {aba === 'dashboard' && <Dashboard estado={estado} onSaldoInicial={definirSaldoInicial} />}
         {aba === 'diario' && (
           <Diario
             lancamentos={estado.lancamentos}

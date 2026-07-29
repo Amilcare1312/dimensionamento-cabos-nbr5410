@@ -2,7 +2,7 @@ import type { EstadoFinanceiro } from '../tipos'
 import { calcularDashboard } from '../calculos'
 import { moeda } from '../formatar'
 import { MESES_CURTOS } from '../categorias'
-import { Cartao, Selo } from '../../components/ui'
+import { Cartao, NumberInput, Selo } from '../../components/ui'
 import { BarrasMensais, Rosca } from './graficos'
 
 function CartaoKPI({
@@ -32,7 +32,13 @@ function CartaoKPI({
   )
 }
 
-export function Dashboard({ estado }: { estado: EstadoFinanceiro }) {
+export function Dashboard({
+  estado,
+  onSaldoInicial,
+}: {
+  estado: EstadoFinanceiro
+  onSaldoInicial: (v: number) => void
+}) {
   const d = calcularDashboard(estado)
   const nomeMes = MESES_CURTOS[d.mesReferencia]
 
@@ -51,9 +57,21 @@ export function Dashboard({ estado }: { estado: EstadoFinanceiro }) {
       </div>
 
       <Cartao>
-        <div className="mb-2 flex items-center justify-between">
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-100">Fluxo de Caixa {estado.ano}</h2>
-          <span className="text-xs text-slate-500 dark:text-slate-400">Saldo do banco hoje: {moeda(d.saldoBanco)}</span>
+          <div className="flex flex-wrap items-center gap-4">
+            <label className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+              <span className="font-medium">Saldo inicial (R$)</span>
+              <div className="w-36">
+                <NumberInput
+                  value={estado.saldoInicial}
+                  step="0.01"
+                  onChange={(e) => onSaldoInicial(Number(e.target.value) || 0)}
+                />
+              </div>
+            </label>
+            <span className="text-xs text-slate-500 dark:text-slate-400">Saldo do banco hoje: {moeda(d.saldoBanco)}</span>
+          </div>
         </div>
         <BarrasMensais entradas={d.fluxo.totalEntradasMes} saidas={d.fluxo.totalSaidasMes} saldo={d.fluxo.saldoFinalMes} />
       </Cartao>
