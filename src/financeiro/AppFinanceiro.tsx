@@ -13,22 +13,55 @@ import { PlanoContas } from './components/PlanoContas'
 
 type Aba = 'dashboard' | 'diario' | 'pagar' | 'receber' | 'fluxo' | 'plano'
 
+interface Desfazer {
+  anterior: EstadoFinanceiro
+  msg: string
+}
+
 export default function AppFinanceiro() {
   const { tema, alternarTema } = useTema()
   const [aba, setAba] = useState<Aba>('dashboard')
   const [estado, setEstado] = useState<EstadoFinanceiro>(() => carregarEstado())
+  const [desfazer, setDesfazer] = useState<Desfazer | null>(null)
   const inputArquivo = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     salvarEstado(estado)
   }, [estado])
 
+  // Some com o aviso de "desfazer" automaticamente após alguns segundos.
+  useEffect(() => {
+    if (!desfazer) return
+    const t = setTimeout(() => setDesfazer(null), 8000)
+    return () => clearTimeout(t)
+  }, [desfazer])
+
   function adicionarLancamento(l: Lancamento) {
     setEstado((e) => ({ ...e, lancamentos: [...e.lancamentos, l] }))
   }
 
+  // Aplica uma alteração destrutiva guardando o estado anterior para desfazer.
+  function comUndo(proximo: EstadoFinanceiro, msg: string) {
+    setDesfazer({ anterior: estado, msg })
+    setEstado(proximo)
+  }
+
   function removerLancamento(id: string) {
-    setEstado((e) => ({ ...e, lancamentos: e.lancamentos.filter((l) => l.id !== id) }))
+    comUndo({ ...estado, lancamentos: estado.lancamentos.filter((l) => l.id !== id) }, '1 lançamento removido.')
+  }
+
+  function removerVarios(ids: string[]) {
+    const set = new Set(ids)
+    comUndo(
+      { ...estado, lancamentos: estado.lancamentos.filter((l) => !set.has(l.id)) },
+      `${ids.length} lançamento(s) removido(s).`,
+    )
+  }
+
+  function executarDesfazer() {
+    if (!desfazer) return
+    setEstado(desfazer.anterior)
+    setDesfazer(null)
   }
 
   function definirSaldoInicial(v: number) {
@@ -80,14 +113,17 @@ export default function AppFinanceiro() {
             />
             <BotaoSecundario
               onClick={() => {
-                if (confirm('Carregar dados de exemplo? Isso substitui os lançamentos atuais.')) setEstado(estadoInicial())
+                if (confirm('Carregar dados de exemplo? Isso substitui os lançamentos atuais.'))
+                  comUndo(estadoInicial(), 'Dados de exemplo carregados.')
               }}
             >
               Exemplo
             </BotaoSecundario>
             <BotaoSecundario
               onClick={() => {
-                if (confirm('Limpar todos os lançamentos? Esta ação não pode ser desfeita.')) setEstado(estadoVazio(estado.ano))
+                if (estado.lancamentos.length === 0) return
+                if (confirm('Limpar todos os lançamentos?'))
+                  comUndo(estadoVazio(estado.ano), 'Todos os lançamentos foram removidos.')
               }}
             >
               Limpar
@@ -118,7 +154,12 @@ export default function AppFinanceiro() {
       <main className="mx-auto max-w-7xl px-4 pb-16 pt-4">
         {aba === 'dashboard' && <Dashboard estado={estado} />}
         {aba === 'diario' && (
-          <Diario lancamentos={estado.lancamentos} onAdicionar={adicionarLancamento} onRemover={removerLancamento} />
+          <Diario
+            lancamentos={estado.lancamentos}
+            onAdicionar={adicionarLancamento}
+            onRemover={removerLancamento}
+            onRemoverVarios={removerVarios}
+          />
         )}
         {aba === 'pagar' && <ContasPagar lancamentos={estado.lancamentos} />}
         {aba === 'receber' && <ContasReceber lancamentos={estado.lancamentos} />}
@@ -130,6 +171,27 @@ export default function AppFinanceiro() {
         <p>Aplicativo financeiro com partidas dobradas — os dados ficam salvos apenas neste navegador.</p>
         <p className="mt-1">© 2026 Amilcare. Todos os direitos reservados.</p>
       </footer>
+
+      {desfazer && (
+        <div className="fixed inset-x-0 bottom-4 z-50 flex justify-center px-4">
+          <div className="flex items-center gap-4 rounded-lg bg-slate-900 px-4 py-2.5 text-sm text-white shadow-lg dark:bg-slate-700">
+            <span>{desfazer.msg}</span>
+            <button
+              onClick={executarDesfazer}
+              className="rounded-md px-2 py-1 text-sm font-semibold text-teal-300 transition hover:bg-white/10 hover:text-teal-200"
+            >
+              Desfazer
+            </button>
+            <button
+              onClick={() => setDesfazer(null)}
+              className="text-slate-400 transition hover:text-white"
+              aria-label="Fechar aviso"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
