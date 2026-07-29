@@ -1,5 +1,5 @@
-import AppFinanceiro from './financeiro/AppFinanceiro'
+import RaizApp from './saas/RaizApp'
 
 export default function App() {
-  return <AppFinanceiro />
+  return <RaizApp />
 }

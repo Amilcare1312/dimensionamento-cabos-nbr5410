@@ -45,6 +45,20 @@ Cada transação é um lançamento com 2 ou mais linhas balanceadas (Σdébitos 
 
 No Fluxo de Caixa, a categoria (`Categ. FC`) é registrada na linha da conta 1.1.2.
 
+## Modos de uso
+
+O app roda em dois modos, decididos automaticamente pela presença das
+variáveis de ambiente do Supabase:
+
+- **Local** (padrão): sem configuração, os dados ficam só no navegador
+  (`localStorage`). É também o arquivo único `Controle-Financeiro.html`, que
+  abre com duplo clique e funciona offline.
+- **SaaS** (nuvem): login por e-mail/senha (Supabase Auth), dados salvos na
+  nuvem por usuário e acesso liberado por **assinatura (Stripe)**. Veja o passo
+  a passo em [SETUP-SAAS.md](SETUP-SAAS.md). O código do SaaS fica em
+  [`src/saas/`](src/saas) e o backend (SQL + Edge Functions) em
+  [`supabase/`](supabase).
+
 ## Desenvolvimento
 
 ```bash

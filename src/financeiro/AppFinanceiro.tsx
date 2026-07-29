@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { EstadoFinanceiro, Lancamento } from './tipos'
-import { carregarEstado, exportarJSON, importarJSON, salvarEstado } from './armazenamento'
+import { exportarJSON, importarJSON } from './armazenamento'
 import { estadoInicial, estadoVazio } from './dadosIniciais'
 import { useTema } from '../hooks/useTema'
 import { BotaoSecundario } from '../components/ui'
@@ -18,16 +18,33 @@ interface Desfazer {
   msg: string
 }
 
-export default function AppFinanceiro() {
+export interface AppFinanceiroProps {
+  /** Estado inicial já carregado (do navegador ou da nuvem). */
+  estadoCarregado: EstadoFinanceiro
+  /** Chamado sempre que o estado muda, para persistir. */
+  onPersistir: (estado: EstadoFinanceiro) => void
+  /** Ações extras no cabeçalho (ex.: e-mail do usuário e botão Sair). */
+  acoesUsuario?: ReactNode
+  /** Texto do rodapé (varia entre modo local e nuvem). */
+  rodape?: string
+}
+
+export default function AppFinanceiro({ estadoCarregado, onPersistir, acoesUsuario, rodape }: AppFinanceiroProps) {
   const { tema, alternarTema } = useTema()
   const [aba, setAba] = useState<Aba>('dashboard')
-  const [estado, setEstado] = useState<EstadoFinanceiro>(() => carregarEstado())
+  const [estado, setEstado] = useState<EstadoFinanceiro>(estadoCarregado)
   const [desfazer, setDesfazer] = useState<Desfazer | null>(null)
   const inputArquivo = useRef<HTMLInputElement>(null)
+  const primeiraRenderizacao = useRef(true)
 
+  // Persiste a cada mudança (pula a primeira, que é só o estado recém-carregado).
   useEffect(() => {
-    salvarEstado(estado)
-  }, [estado])
+    if (primeiraRenderizacao.current) {
+      primeiraRenderizacao.current = false
+      return
+    }
+    onPersistir(estado)
+  }, [estado, onPersistir])
 
   // Some com o aviso de "desfazer" automaticamente após alguns segundos.
   useEffect(() => {
@@ -72,7 +89,7 @@ export default function AppFinanceiro() {
     const leitor = new FileReader()
     leitor.onload = () => {
       const novo = importarJSON(String(leitor.result))
-      if (novo) setEstado(novo)
+      if (novo) comUndo(novo, 'Dados importados.')
       else alert('Arquivo inválido. Selecione um JSON exportado por este aplicativo.')
     }
     leitor.readAsText(arquivo)
@@ -131,6 +148,7 @@ export default function AppFinanceiro() {
             <BotaoSecundario onClick={alternarTema} aria-label="Alternar tema claro/escuro">
               {tema === 'claro' ? '🌙' : '☀️'}
             </BotaoSecundario>
+            {acoesUsuario}
           </div>
         </div>
       </header>
@@ -168,7 +186,7 @@ export default function AppFinanceiro() {
       </main>
 
       <footer className="border-t border-slate-200 px-4 py-6 text-center text-xs text-slate-400 dark:border-slate-800">
-        <p>Aplicativo financeiro com partidas dobradas — os dados ficam salvos apenas neste navegador.</p>
+        <p>{rodape ?? 'Aplicativo financeiro com partidas dobradas — os dados ficam salvos apenas neste navegador.'}</p>
         <p className="mt-1">© 2026 Amilcare. Todos os direitos reservados.</p>
       </footer>
 
