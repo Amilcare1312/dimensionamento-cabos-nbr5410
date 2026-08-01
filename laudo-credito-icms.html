@@ -285,6 +285,38 @@
   .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
   .reveal.in{opacity:1;transform:none}
 </style>
+
+<!-- ============================================================
+     GOOGLE ADS — RASTREAMENTO DE CONVERSÃO
+     Preencha os dois valores abaixo com os dados da sua conta:
+       • GOOGLE_ADS_ID: o ID de conversão, no formato "AW-123456789"
+       • CONVERSION_LABEL: o rótulo da conversão (ex.: "AbCdEfGhIj")
+     Enquanto estiverem com "XXXX", nada é carregado nem disparado.
+     ============================================================ -->
+<script>
+  var GOOGLE_ADS_ID   = "AW-XXXXXXXXX";     // <-- cole aqui o ID de conversão
+  var CONVERSION_LABEL = "XXXXXXXXXXXXXXXX"; // <-- cole aqui o rótulo da conversão
+
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  (function(){
+    if (GOOGLE_ADS_ID && GOOGLE_ADS_ID.indexOf("XXX") === -1) {
+      var s = document.createElement("script");
+      s.async = true;
+      s.src = "https://www.googletagmanager.com/gtag/js?id=" + GOOGLE_ADS_ID;
+      document.head.appendChild(s);
+      gtag("js", new Date());
+      gtag("config", GOOGLE_ADS_ID);
+    }
+  })();
+  // Dispara a conversão quando o lead clica para falar no WhatsApp
+  function reportWhatsappConversion(){
+    if (GOOGLE_ADS_ID && GOOGLE_ADS_ID.indexOf("XXX") === -1 &&
+        CONVERSION_LABEL && CONVERSION_LABEL.indexOf("XXX") === -1) {
+      gtag("event", "conversion", { "send_to": GOOGLE_ADS_ID + "/" + CONVERSION_LABEL });
+    }
+  }
+</script>
 </head>
 <body>
 
@@ -579,6 +611,7 @@
   document.querySelectorAll("[data-wa]").forEach(function(a){
     a.addEventListener("click", function(e){
       e.preventDefault();
+      if (typeof reportWhatsappConversion === "function") reportWhatsappConversion();
       window.open(base + a.getAttribute("data-wa"), "_blank", "noopener");
     });
   });
@@ -618,6 +651,7 @@
     if(seg) msg += "*Segmento:* " + encodeURIComponent(seg) + "%0A";
     msg += "%0AVim pela landing page do laudo de crédito de ICMS.";
 
+    if (typeof reportWhatsappConversion === "function") reportWhatsappConversion();
     window.open(base + msg, "_blank", "noopener");
   });
 
