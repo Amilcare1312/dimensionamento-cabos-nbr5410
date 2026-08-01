@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crédito de ICMS na Energia | Laudo Técnico — Amper Energia</title>
+<meta name="description" content="Sua indústria paga ICMS a mais na conta de luz. A energia consumida no processo produtivo dá direito a crédito de ICMS (Lei Kandir). O laudo técnico com ART comprova e quantifica esse direito — recupere até 5 anos.">
+<style>
+  :root{
+    --paper:#F2EEE4; --surface:#FBF9F2; --surface-2:#EDE8DA;
+    --ink:#13232B; --ink-soft:#33454C; --muted:#5D6E73;
+    --line:rgba(19,35,43,.13); --line-soft:rgba(19,35,43,.08);
+    --gold:#B0801E; --gold-bright:#C79327; --teal:#1F5560; --teal-bright:#2C7583;
+    --hero:#0B1D24; --hero-2:#0E2731; --on-hero:#EDE7D6; --on-hero-muted:#9BB0B3;
+    --good:#2E7D5B; --danger:#B23A2E;
+    --font-display:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+    --font-body:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --font-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --wrap:1120px; --radius:16px;
+    --shadow:0 1px 2px rgba(11,29,36,.06),0 12px 34px -18px rgba(11,29,36,.34);
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --paper:#08151A; --surface:#0E222A; --surface-2:#123039;
+      --ink:#EBE6D8; --ink-soft:#C4CFCF; --muted:#8FA2A5;
+      --line:rgba(235,230,216,.14); --line-soft:rgba(235,230,216,.08);
+      --gold:#E1B24F; --gold-bright:#F0C464; --teal:#3E8C9C; --teal-bright:#57A9B8;
+      --hero:#061216; --hero-2:#0A2129;
+      --good:#54B487; --danger:#E0705F;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 18px 40px -20px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="light"]{
+    --paper:#F2EEE4; --surface:#FBF9F2; --surface-2:#EDE8DA;
+    --ink:#13232B; --ink-soft:#33454C; --muted:#5D6E73;
+    --line:rgba(19,35,43,.13); --line-soft:rgba(19,35,43,.08);
+    --gold:#B0801E; --gold-bright:#C79327; --teal:#1F5560; --teal-bright:#2C7583;
+    --good:#2E7D5B; --danger:#B23A2E;
+    --shadow:0 1px 2px rgba(11,29,36,.06),0 12px 34px -18px rgba(11,29,36,.34);
+  }
+  :root[data-theme="dark"]{
+    --paper:#08151A; --surface:#0E222A; --surface-2:#123039;
+    --ink:#EBE6D8; --ink-soft:#C4CFCF; --muted:#8FA2A5;
+    --line:rgba(235,230,216,.14); --line-soft:rgba(235,230,216,.08);
+    --gold:#E1B24F; --gold-bright:#F0C464; --teal:#3E8C9C; --teal-bright:#57A9B8;
+    --hero:#061216; --hero-2:#0A2129;
+    --good:#54B487; --danger:#E0705F;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 18px 40px -20px rgba(0,0,0,.7);
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:var(--font-body);font-size:17px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+  h1,h2,h3{font-family:var(--font-display);font-weight:600;line-height:1.08;
+    text-wrap:balance;letter-spacing:-.01em;margin:0}
+  p{margin:0}
+  a{color:inherit}
+  .wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px}
+  .eyebrow{font-family:var(--font-body);font-weight:700;font-size:12.5px;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+  .num{font-variant-numeric:tabular-nums}
+  .mono{font-family:var(--font-mono)}
+
+  /* ---------- buttons ---------- */
+  .btn{display:inline-flex;align-items:center;gap:9px;font-family:var(--font-body);
+    font-weight:650;font-size:16px;border-radius:999px;padding:14px 24px;cursor:pointer;
+    border:1px solid transparent;text-decoration:none;transition:transform .15s ease,box-shadow .2s ease,background .2s ease;white-space:nowrap}
+  .btn:active{transform:translateY(1px)}
+  .btn-wa{background:#25D366;color:#04231a;box-shadow:0 10px 26px -12px rgba(37,211,102,.8)}
+  .btn-wa:hover{background:#22c25e;transform:translateY(-1px)}
+  .btn-gold{background:var(--gold);color:#fff}
+  :root[data-theme="dark"] .btn-gold,@media (prefers-color-scheme:dark){.btn-gold{color:#160f00}}
+  .btn-gold:hover{background:var(--gold-bright);transform:translateY(-1px)}
+  .btn-ghost{background:transparent;border-color:currentColor;color:inherit}
+  .btn-ghost:hover{background:color-mix(in srgb,currentColor 8%,transparent)}
+  .wa-ico{width:19px;height:19px;flex:none}
+
+  /* ---------- top bar ---------- */
+  header.bar{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--paper) 86%,transparent);
+    backdrop-filter:blur(12px);border-bottom:1px solid var(--line-soft)}
+  .bar-in{display:flex;align-items:center;justify-content:space-between;height:66px}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:750;letter-spacing:-.01em;font-size:17px}
+  .brand .mark{width:34px;height:34px;border-radius:9px;flex:none;display:grid;place-items:center;
+    background:linear-gradient(150deg,var(--teal),var(--hero));color:var(--gold-bright);
+    font-family:var(--font-display);font-weight:700;font-size:19px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+  .brand small{display:block;font-weight:500;font-size:11px;letter-spacing:.02em;color:var(--muted)}
+  .bar .btn{padding:10px 18px;font-size:14.5px}
+  @media (max-width:620px){.bar-desk{display:none}}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;background:radial-gradient(120% 130% at 82% -10%,var(--hero-2),var(--hero) 60%);
+    color:var(--on-hero);overflow:hidden;border-bottom:1px solid rgba(0,0,0,.3)}
+  .hero::before{content:"";position:absolute;inset:0;opacity:.5;pointer-events:none;
+    background:
+      radial-gradient(60% 50% at 88% 12%,rgba(199,147,39,.16),transparent 70%),
+      linear-gradient(transparent 0 96%,rgba(255,255,255,.03) 96%) 0 0/100% 34px,
+      linear-gradient(90deg,transparent 0 96%,rgba(255,255,255,.03) 96%) 0 0/34px 100%}
+  .hero-grid{position:relative;display:grid;grid-template-columns:1.08fr .92fr;gap:52px;
+    align-items:center;padding:76px 0 84px}
+  @media (max-width:920px){.hero-grid{grid-template-columns:1fr;gap:40px;padding:52px 0 60px}}
+  .hero .eyebrow{color:var(--gold-bright)}
+  .hero h1{font-size:clamp(2.35rem,5.4vw,3.9rem);margin:20px 0 0;color:#F5EFDF}
+  .hero h1 .hl{color:var(--gold-bright);font-style:italic}
+  .lede{margin-top:22px;font-size:1.16rem;line-height:1.55;color:var(--on-hero-muted);max-width:36ch}
+  .hero-cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:32px}
+  .trust{display:flex;flex-wrap:wrap;gap:10px 20px;margin-top:34px;padding-top:26px;
+    border-top:1px solid rgba(255,255,255,.1)}
+  .trust span{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;color:var(--on-hero-muted)}
+  .trust .dot{width:6px;height:6px;border-radius:50%;background:var(--gold-bright);flex:none}
+
+  /* invoice card */
+  .invoice{background:var(--surface);color:var(--ink);border-radius:20px;padding:26px 26px 22px;
+    box-shadow:0 30px 70px -30px rgba(0,0,0,.7);border:1px solid var(--line);position:relative}
+  .invoice .tag{position:absolute;top:-13px;right:22px;background:var(--gold);color:#fff;
+    font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:999px}
+  :root[data-theme="dark"] .invoice .tag{color:#160f00}
+  @media (prefers-color-scheme:dark){.invoice .tag{color:#160f00}}
+  .inv-head{display:flex;justify-content:space-between;align-items:baseline;
+    border-bottom:1px dashed var(--line);padding-bottom:12px;margin-bottom:6px}
+  .inv-head b{font-family:var(--font-display);font-size:1.05rem}
+  .inv-head small{color:var(--muted);font-size:12px}
+  .inv-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;
+    border-bottom:1px solid var(--line-soft);font-size:14.5px}
+  .inv-row span:first-child{color:var(--ink-soft)}
+  .inv-row .v{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+  .inv-row.flag{background:color-mix(in srgb,var(--gold) 14%,transparent);
+    margin:0 -12px;padding:12px;border-radius:10px;border-bottom:none;
+    box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--gold) 42%,transparent)}
+  .inv-row.flag span:first-child{color:var(--ink);font-weight:650}
+  .inv-row.flag .v{color:var(--gold);font-weight:700}
+  .inv-foot{margin-top:16px;background:var(--hero);color:var(--on-hero);border-radius:12px;
+    padding:15px 16px;display:flex;justify-content:space-between;align-items:center}
+  .inv-foot small{color:var(--on-hero-muted);font-size:11.5px;letter-spacing:.03em;text-transform:uppercase}
+  .inv-foot .big{font-family:var(--font-mono);font-size:1.5rem;font-weight:700;color:var(--gold-bright);font-variant-numeric:tabular-nums}
+  .inv-note{font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.4}
+
+  /* ---------- stats band ---------- */
+  .band{background:var(--hero-2);color:var(--on-hero);border-bottom:1px solid rgba(0,0,0,.25)}
+  .band-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;padding:34px 0}
+  @media (max-width:780px){.band-grid{grid-template-columns:repeat(2,1fr);gap:28px 20px;padding:30px 0}}
+  .stat b{font-family:var(--font-display);font-size:2.15rem;color:var(--gold-bright);display:block;line-height:1;font-variant-numeric:tabular-nums}
+  .stat span{display:block;margin-top:8px;font-size:13.5px;color:var(--on-hero-muted);line-height:1.4}
+
+  /* ---------- sections ---------- */
+  section{padding:84px 0}
+  @media (max-width:780px){section{padding:60px 0}}
+  .sec-head{max-width:640px;margin-bottom:44px}
+  .sec-head h2{font-size:clamp(1.8rem,3.6vw,2.7rem);margin-top:14px}
+  .sec-head p{margin-top:16px;color:var(--ink-soft);font-size:1.08rem}
+  .center{margin-left:auto;margin-right:auto;text-align:center}
+
+  /* problem / cost cards */
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+  @media (max-width:820px){.cols{grid-template-columns:1fr}}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:30px;box-shadow:var(--shadow)}
+  .panel h3{font-size:1.3rem;margin-bottom:14px}
+  .panel.warn{border-color:color-mix(in srgb,var(--danger) 40%,var(--line))}
+  .panel .lbl{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+  .panel.warn .lbl{color:var(--danger)}
+  .panel.win .lbl{color:var(--good)}
+  .checklist{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:13px}
+  .checklist li{display:flex;gap:12px;font-size:15.5px;color:var(--ink-soft);line-height:1.45}
+  .checklist .ic{flex:none;width:22px;height:22px;border-radius:6px;display:grid;place-items:center;
+    font-size:13px;font-weight:800;margin-top:1px}
+  .win .ic{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}
+  .warn .ic{background:color-mix(in srgb,var(--danger) 14%,transparent);color:var(--danger)}
+
+  /* how it works steps */
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;counter-reset:s}
+  @media (max-width:900px){.steps{grid-template-columns:1fr 1fr}}
+  @media (max-width:520px){.steps{grid-template-columns:1fr}}
+  .step{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:26px;position:relative;box-shadow:var(--shadow)}
+  .step .n{counter-increment:s;font-family:var(--font-mono);font-size:13px;font-weight:700;
+    color:var(--gold);letter-spacing:.05em}
+  .step .n::before{content:"0" counter(s)}
+  .step h3{font-size:1.12rem;margin:12px 0 8px}
+  .step p{font-size:14.5px;color:var(--ink-soft);line-height:1.5}
+
+  /* legal quote */
+  .law{background:linear-gradient(160deg,var(--surface-2),var(--surface));
+    border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:var(--radius);
+    padding:38px 40px;box-shadow:var(--shadow)}
+  @media (max-width:600px){.law{padding:28px 24px}}
+  .law q{font-family:var(--font-display);font-size:1.4rem;line-height:1.5;font-style:italic;display:block;color:var(--ink)}
+  .law q::before{content:"“"}.law q::after{content:"”"}
+  .law cite{display:block;margin-top:18px;font-style:normal;font-size:14px;font-weight:650;color:var(--gold)}
+  .law .exp{margin-top:20px;color:var(--ink-soft);font-size:1.02rem}
+
+  /* audience chips */
+  .chips{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
+  .chip{background:var(--surface);border:1px solid var(--line);border-radius:999px;
+    padding:11px 18px;font-size:14.5px;font-weight:550;box-shadow:var(--shadow)}
+  .chip b{color:var(--gold)}
+
+  /* credibility */
+  .cred{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;
+    background:var(--hero);color:var(--on-hero);border-radius:24px;padding:48px;box-shadow:var(--shadow)}
+  @media (max-width:820px){.cred{grid-template-columns:1fr;padding:34px;gap:28px}}
+  .cred h2{color:#F5EFDF;font-size:clamp(1.7rem,3.4vw,2.4rem)}
+  .cred p{color:var(--on-hero-muted);margin-top:16px}
+  .cred .signet{border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:24px;
+    background:rgba(255,255,255,.03)}
+  .cred .signet .row{display:flex;justify-content:space-between;gap:16px;padding:11px 0;
+    border-bottom:1px solid rgba(255,255,255,.09);font-size:14px}
+  .cred .signet .row:last-child{border-bottom:none}
+  .cred .signet .row span{color:var(--on-hero-muted)}
+  .cred .signet .row b{text-align:right;font-family:var(--font-mono);font-size:13px}
+
+  /* ---------- lead form ---------- */
+  .form-sec{background:var(--surface-2)}
+  .form-card{display:grid;grid-template-columns:.95fr 1.05fr;gap:0;background:var(--surface);
+    border:1px solid var(--line);border-radius:24px;overflow:hidden;box-shadow:0 30px 70px -34px rgba(0,0,0,.5)}
+  @media (max-width:860px){.form-card{grid-template-columns:1fr}}
+  .form-aside{background:linear-gradient(165deg,var(--hero-2),var(--hero));color:var(--on-hero);padding:44px}
+  .form-aside h2{color:#F5EFDF;font-size:1.9rem}
+  .form-aside p{color:var(--on-hero-muted);margin-top:16px;font-size:1.02rem}
+  .form-aside .mini{list-style:none;padding:0;margin:26px 0 0;display:grid;gap:14px}
+  .form-aside .mini li{display:flex;gap:11px;font-size:14.5px;color:var(--on-hero)}
+  .form-aside .mini .ic{color:var(--gold-bright);font-weight:800;flex:none}
+  .form-body{padding:44px}
+  @media (max-width:600px){.form-aside,.form-body{padding:30px 24px}}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:13px;font-weight:650;margin-bottom:7px;color:var(--ink-soft)}
+  .field label .req{color:var(--danger)}
+  .field input,.field select{width:100%;font-family:var(--font-body);font-size:15.5px;
+    padding:13px 14px;border-radius:11px;border:1px solid var(--line);background:var(--paper);
+    color:var(--ink);transition:border .15s ease,box-shadow .15s ease}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--gold);
+    box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 24%,transparent)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:460px){.row2{grid-template-columns:1fr}}
+  .form-body .btn-wa{width:100%;justify-content:center;margin-top:8px;font-size:17px;padding:16px}
+  .form-note{font-size:12.5px;color:var(--muted);margin-top:14px;text-align:center;line-height:1.5}
+  .err{color:var(--danger);font-size:12.5px;margin-top:6px;display:none}
+  .field.invalid input,.field.invalid select{border-color:var(--danger)}
+  .field.invalid .err{display:block}
+
+  /* ---------- faq ---------- */
+  .faq{display:grid;gap:14px;max-width:820px;margin:0 auto}
+  details{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    padding:4px 22px;box-shadow:var(--shadow)}
+  details summary{cursor:pointer;list-style:none;padding:18px 0;font-weight:650;font-size:1.05rem;
+    display:flex;justify-content:space-between;align-items:center;gap:16px}
+  details summary::-webkit-details-marker{display:none}
+  details summary .pl{flex:none;width:22px;height:22px;position:relative;transition:transform .2s ease}
+  details summary .pl::before,details summary .pl::after{content:"";position:absolute;background:var(--gold);
+    border-radius:2px;top:50%;left:50%;transform:translate(-50%,-50%)}
+  details summary .pl::before{width:13px;height:2.2px}
+  details summary .pl::after{width:2.2px;height:13px;transition:transform .2s ease}
+  details[open] summary .pl::after{transform:translate(-50%,-50%) scaleY(0)}
+  details[open] summary .pl{transform:rotate(180deg)}
+  details .a{padding:0 0 20px;color:var(--ink-soft);font-size:15.5px;line-height:1.6}
+
+  /* ---------- final cta ---------- */
+  .final{background:radial-gradient(120% 140% at 50% -20%,var(--hero-2),var(--hero) 60%);
+    color:var(--on-hero);text-align:center}
+  .final h2{color:#F5EFDF;font-size:clamp(1.9rem,4vw,2.9rem);max-width:18ch;margin:0 auto}
+  .final p{color:var(--on-hero-muted);margin:18px auto 0;max-width:52ch;font-size:1.1rem}
+  .final .hero-cta{justify-content:center;margin-top:30px}
+
+  /* ---------- footer ---------- */
+  footer{background:var(--hero);color:var(--on-hero-muted);border-top:1px solid rgba(255,255,255,.08);
+    padding:40px 0;font-size:14px}
+  .foot-grid{display:flex;flex-wrap:wrap;gap:20px 40px;justify-content:space-between;align-items:flex-start}
+  footer b{color:var(--on-hero)}
+  footer a{color:var(--gold-bright);text-decoration:none}
+  .disc{margin-top:24px;padding-top:20px;border-top:1px solid rgba(255,255,255,.08);
+    font-size:12px;line-height:1.6;color:#7c9093}
+
+  /* floating wa */
+  .float-wa{position:fixed;right:20px;bottom:20px;z-index:60;display:inline-flex;align-items:center;gap:10px;
+    background:#25D366;color:#04231a;font-weight:700;padding:14px 20px;border-radius:999px;text-decoration:none;
+    box-shadow:0 16px 40px -12px rgba(37,211,102,.7);transition:transform .15s ease}
+  .float-wa:hover{transform:translateY(-2px)}
+  .float-wa .t{font-size:15px}
+  @media (max-width:600px){.float-wa .t{display:none}.float-wa{padding:15px;border-radius:50%}}
+
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap bar-in">
+    <div class="brand">
+      <span class="mark">A</span>
+      <span>Amper Energia<small>Engenharia Elétrica &amp; Laudos Técnicos</small></span>
+    </div>
+    <a class="btn btn-wa bar-desk" href="#" data-wa="Ol%C3%A1!%20Vim%20pela%20p%C3%A1gina%20do%20cr%C3%A9dito%20de%20ICMS%20e%20quero%20saber%20se%20minha%20empresa%20tem%20direito.">
+      <svg class="wa-ico" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 3C9.4 3 4 8.3 4 14.9c0 2.3.6 4.4 1.8 6.3L4 29l8-2.1c1.8 1 3.9 1.5 6 1.5 6.6 0 12-5.3 12-11.9S22.6 3 16 3zm0 21.8c-1.9 0-3.7-.5-5.3-1.5l-.4-.2-4.7 1.2 1.3-4.6-.3-.4a9.6 9.6 0 01-1.5-5.1C5 9.4 9.9 4.9 16 4.9s11 4.5 11 10c0 5.6-4.9 9.9-11 9.9zm5.5-7.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4 0-.5s-.7-1.7-1-2.3c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.3z"/></svg>
+      Falar no WhatsApp
+    </a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">Laudo Técnico · Crédito de ICMS · Energia Industrial</div>
+      <h1>Sua indústria paga ICMS <span class="hl">a mais</span> na conta de energia.</h1>
+      <p class="lede">A energia consumida no seu processo produtivo dá direito a crédito de ICMS. O laudo técnico com ART comprova e quantifica esse direito — e permite recuperar até 5 anos retroativos.</p>
+      <div class="hero-cta">
+        <a class="btn btn-wa" href="#" data-wa="Ol%C3%A1!%20Vim%20pela%20p%C3%A1gina%20do%20cr%C3%A9dito%20de%20ICMS.%20Quero%20saber%20se%20minha%20ind%C3%BAstria%20tem%20direito%20ao%20cr%C3%A9dito.">
+          <svg class="wa-ico" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 3C9.4 3 4 8.3 4 14.9c0 2.3.6 4.4 1.8 6.3L4 29l8-2.1c1.8 1 3.9 1.5 6 1.5 6.6 0 12-5.3 12-11.9S22.6 3 16 3zm0 21.8c-1.9 0-3.7-.5-5.3-1.5l-.4-.2-4.7 1.2 1.3-4.6-.3-.4a9.6 9.6 0 01-1.5-5.1C5 9.4 9.9 4.9 16 4.9s11 4.5 11 10c0 5.6-4.9 9.9-11 9.9zm5.5-7.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4 0-.5s-.7-1.7-1-2.3c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.3z"/></svg>
+          Falar com engenheiro
+        </a>
+        <a class="btn btn-ghost" href="#simular">Simular meu crédito</a>
+      </div>
+      <div class="trust">
+        <span><i class="dot"></i> Laudo assinado com ART</span>
+        <span><i class="dot"></i> Responsável técnico CREA-SC</span>
+        <span><i class="dot"></i> Base legal: LC 87/1996</span>
+      </div>
+    </div>
+
+    <div class="invoice" aria-label="Exemplo ilustrativo de conta de energia">
+      <span class="tag">Sua conta hoje</span>
+      <div class="inv-head"><b>Fatura de Energia</b><small>Indústria · Grupo A</small></div>
+      <div class="inv-row"><span>Consumo — TE + TUSD</span><span class="v">R$ 84.200</span></div>
+      <div class="inv-row"><span>Demanda contratada</span><span class="v">R$ 18.600</span></div>
+      <div class="inv-row flag"><span>ICMS destacado na fatura</span><span class="v">R$ 21.150</span></div>
+      <div class="inv-foot">
+        <div><small>Parcela recuperável*</small></div>
+        <div class="big">R$ 13.700<span style="font-size:.8rem">/mês</span></div>
+      </div>
+      <p class="inv-note">*Estimativa ilustrativa. O percentual real da energia empregada no processo de industrialização é definido pelo laudo técnico, caso a caso.</p>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="band">
+  <div class="wrap band-grid">
+    <div class="stat reveal"><b class="num">60</b><span>meses (5 anos) de crédito passível de recuperação retroativa</span></div>
+    <div class="stat reveal"><b class="num">ART</b><span>laudo com Anotação de Responsabilidade Técnica no CREA</span></div>
+    <div class="stat reveal"><b>LC&nbsp;87/96</b><span>Lei Kandir, art. 33 — direito ao crédito sobre energia no processo</span></div>
+    <div class="stat reveal"><b class="num">1</b><span>documento técnico que sustenta todo o pedido junto ao Fisco</span></div>
+  </div>
+</div>
+
+<!-- PROBLEM -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">O ponto cego da sua conta de luz</div>
+      <h2>A energia que move a produção não deveria custar ICMS cheio.</h2>
+      <p>A maior parte das indústrias paga ICMS sobre 100% da energia — inclusive sobre a fração que é consumida diretamente no processo de industrialização. E é justamente essa fração que a legislação reconhece como <b>crédito de ICMS</b>.</p>
+    </div>
+    <div class="cols">
+      <div class="panel warn">
+        <div class="lbl">Sem o laudo</div>
+        <h3>Você financia o Estado com dinheiro que é seu</h3>
+        <ul class="checklist">
+          <li><span class="ic">✕</span> Paga ICMS sobre a energia que alimenta motores, fornos, estufas e linhas de produção.</li>
+          <li><span class="ic">✕</span> Não tem como comprovar tecnicamente quanto da energia entra no processo produtivo.</li>
+          <li><span class="ic">✕</span> Vê o direito de 5 anos prescrever mês a mês, sem recuperar nada.</li>
+          <li><span class="ic">✕</span> Fica exposto se tentar creditar sem base técnica documentada.</li>
+        </ul>
+      </div>
+      <div class="panel win">
+        <div class="lbl">Com o laudo técnico Amper</div>
+        <h3>Você transforma um custo fixo em crédito recuperável</h3>
+        <ul class="checklist">
+          <li><span class="ic">✓</span> Engenheiro eletricista mede e segrega a energia empregada na industrialização.</li>
+          <li><span class="ic">✓</span> Laudo com ART define o percentual exato que gera direito a crédito.</li>
+          <li><span class="ic">✓</span> Documento técnico que seu contador e jurídico usam para recuperar e reduzir o ICMS.</li>
+          <li><span class="ic">✓</span> Segurança para pleitear os créditos dos últimos 60 meses.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LAW -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="law reveal">
+      <q>Dará direito a crédito a entrada de energia elétrica no estabelecimento quando consumida no processo de industrialização.</q>
+      <cite>— Lei Complementar nº 87/1996 (Lei Kandir), art. 33, inciso II, alínea "b"</cite>
+      <p class="exp">O direito existe na lei — mas o Fisco exige <b>prova técnica</b> de qual parcela da energia foi de fato consumida no processo produtivo. Essa prova é o <b>laudo técnico de engenheiro eletricista</b>. Sem ele, o crédito não se sustenta; com ele, o pedido tem base sólida e defensável.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Como funciona</div>
+      <h2>Do diagnóstico ao laudo assinado — em 4 etapas</h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><div class="n"></div><h3>Diagnóstico</h3><p>Analisamos suas faturas de energia, o enquadramento tarifário e o fluxo produtivo para estimar o potencial de crédito.</p></div>
+      <div class="step reveal"><div class="n"></div><h3>Levantamento em campo</h3><p>Mapeamento de cargas e medições da instalação para identificar o que é consumo do processo de industrialização.</p></div>
+      <div class="step reveal"><div class="n"></div><h3>Laudo técnico + ART</h3><p>Emissão do laudo assinado por engenheiro eletricista, com o percentual de energia que gera direito ao crédito de ICMS.</p></div>
+      <div class="step reveal"><div class="n"></div><h3>Recuperação</h3><p>Seu contador e jurídico usam o laudo para pleitear os créditos retroativos e reduzir o ICMS daqui pra frente.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- AUDIENCE -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Para quem é</div>
+      <h2>Se a energia é insumo da sua produção, esse crédito é seu.</h2>
+      <p>Atendemos indústrias e estabelecimentos com processo de industrialização e consumo relevante de energia elétrica:</p>
+    </div>
+    <div class="chips">
+      <span class="chip">Metalúrgicas &amp; <b>usinagem</b></span>
+      <span class="chip">Plásticos &amp; <b>injeção</b></span>
+      <span class="chip"><b>Frigoríficos</b> &amp; alimentos</span>
+      <span class="chip">Cerâmicas &amp; <b>fornos</b></span>
+      <span class="chip">Têxtil &amp; <b>confecção</b></span>
+      <span class="chip"><b>Gráficas</b> &amp; embalagens</span>
+      <span class="chip">Madeireiras &amp; <b>moveleiras</b></span>
+      <span class="chip">Câmaras frias &amp; <b>refrigeração</b></span>
+      <span class="chip"><b>Panificação</b> industrial</span>
+    </div>
+  </div>
+</section>
+
+<!-- CREDIBILITY -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="cred reveal">
+      <div>
+        <div class="eyebrow" style="color:var(--gold-bright)">Responsabilidade técnica de verdade</div>
+        <h2>Um laudo só vale se quem assina responde por ele.</h2>
+        <p>A Amper Energia é uma empresa de engenharia elétrica. Seu laudo é emitido com <b>ART registrada no CREA</b> e assinado por engenheiro eletricista — o tipo de documento técnico que o Fisco reconhece e que sustenta a recuperação do crédito com segurança.</p>
+      </div>
+      <div class="signet">
+        <div class="row"><span>Empresa</span><b>Amper Energia Ltda</b></div>
+        <div class="row"><span>CNPJ</span><b>24.848.894/0001-32</b></div>
+        <div class="row"><span>Resp. Técnico</span><b>Amilcare Augusto</b></div>
+        <div class="row"><span>Registro</span><b>CREA-SC 17.115-9</b></div>
+        <div class="row"><span>Base</span><b>São José / SC</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LEAD FORM -->
+<section class="form-sec" id="simular">
+  <div class="wrap">
+    <div class="form-card">
+      <aside class="form-aside">
+        <div class="eyebrow" style="color:var(--gold-bright)">Diagnóstico gratuito</div>
+        <h2>Descubra em minutos quanto sua indústria pode recuperar.</h2>
+        <p>Preencha os dados e envie direto pelo WhatsApp. Um engenheiro faz uma análise inicial da sua conta e te diz se há potencial de crédito.</p>
+        <ul class="mini">
+          <li><span class="ic">✓</span> Análise inicial sem compromisso</li>
+          <li><span class="ic">✓</span> Resposta de um engenheiro eletricista</li>
+          <li><span class="ic">✓</span> Estimativa do crédito dos últimos 5 anos</li>
+        </ul>
+      </aside>
+      <div class="form-body">
+        <form id="leadForm" novalidate>
+          <div class="field">
+            <label for="nome">Seu nome <span class="req">*</span></label>
+            <input id="nome" name="nome" type="text" autocomplete="name" placeholder="Ex.: João Pereira">
+            <div class="err">Informe seu nome.</div>
+          </div>
+          <div class="field">
+            <label for="empresa">Empresa <span class="req">*</span></label>
+            <input id="empresa" name="empresa" type="text" autocomplete="organization" placeholder="Razão social ou nome fantasia">
+            <div class="err">Informe o nome da empresa.</div>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="whats">WhatsApp <span class="req">*</span></label>
+              <input id="whats" name="whats" type="tel" inputmode="tel" autocomplete="tel" placeholder="(48) 9 9999-9999">
+              <div class="err">Informe um WhatsApp válido.</div>
+            </div>
+            <div class="field">
+              <label for="cidade">Cidade / UF</label>
+              <input id="cidade" name="cidade" type="text" placeholder="Ex.: Joinville / SC">
+              <div class="err"></div>
+            </div>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="conta">Conta média de energia <span class="req">*</span></label>
+              <select id="conta" name="conta">
+                <option value="" selected disabled>Selecione…</option>
+                <option>Até R$ 10 mil/mês</option>
+                <option>R$ 10 mil a R$ 30 mil/mês</option>
+                <option>R$ 30 mil a R$ 80 mil/mês</option>
+                <option>R$ 80 mil a R$ 200 mil/mês</option>
+                <option>Acima de R$ 200 mil/mês</option>
+              </select>
+              <div class="err">Selecione uma faixa.</div>
+            </div>
+            <div class="field">
+              <label for="segmento">Segmento</label>
+              <input id="segmento" name="segmento" type="text" placeholder="Ex.: Metalúrgica">
+              <div class="err"></div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-wa">
+            <svg class="wa-ico" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 3C9.4 3 4 8.3 4 14.9c0 2.3.6 4.4 1.8 6.3L4 29l8-2.1c1.8 1 3.9 1.5 6 1.5 6.6 0 12-5.3 12-11.9S22.6 3 16 3zm0 21.8c-1.9 0-3.7-.5-5.3-1.5l-.4-.2-4.7 1.2 1.3-4.6-.3-.4a9.6 9.6 0 01-1.5-5.1C5 9.4 9.9 4.9 16 4.9s11 4.5 11 10c0 5.6-4.9 9.9-11 9.9zm5.5-7.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4 0-.5s-.7-1.7-1-2.3c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.3z"/></svg>
+            Enviar e falar no WhatsApp
+          </button>
+          <p class="form-note">Ao enviar, você abre uma conversa no WhatsApp da Amper Energia com seus dados preenchidos. Sem spam.</p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section>
+  <div class="wrap">
+    <div class="sec-head center">
+      <div class="eyebrow">Perguntas frequentes</div>
+      <h2>O que as indústrias mais perguntam</h2>
+    </div>
+    <div class="faq">
+      <details><summary>Isso é legal? De onde vem esse direito?<span class="pl"></span></summary><div class="a">Sim. O direito ao crédito de ICMS sobre a energia elétrica consumida no processo de industrialização está previsto na Lei Complementar nº 87/1996 (Lei Kandir), art. 33. O que a lei exige é a comprovação técnica de qual parcela da energia entra no processo produtivo — e é exatamente isso que o laudo técnico faz.</div></details>
+      <details><summary>Por que preciso de um laudo de engenheiro?<span class="pl"></span></summary><div class="a">Porque o Fisco não aceita um percentual "estimado no chute". É preciso um levantamento técnico das cargas e do consumo, feito e assinado por engenheiro eletricista, com ART registrada no CREA. Esse laudo é o documento que dá segurança ao seu contador e jurídico para pleitear e sustentar o crédito.</div></details>
+      <details><summary>Consigo recuperar valores do passado?<span class="pl"></span></summary><div class="a">Em regra, é possível pleitear créditos dos últimos 60 meses (5 anos), respeitado o prazo de prescrição. Por isso o tempo importa: a cada mês que passa, uma competência antiga prescreve e o crédito correspondente se perde.</div></details>
+      <details><summary>Minha empresa se enquadra?<span class="pl"></span></summary><div class="a">Se você tem um processo de industrialização (transformação, beneficiamento, montagem etc.) com consumo relevante de energia elétrica, provavelmente sim. Metalúrgicas, plásticos, alimentos, frigoríficos, cerâmicas, têxteis, gráficas e madeireiras são exemplos clássicos. O diagnóstico inicial confirma o potencial.</div></details>
+      <details><summary>Como funciona a análise inicial?<span class="pl"></span></summary><div class="a">Você fala com um engenheiro pelo WhatsApp e compartilha suas faturas de energia. Fazemos uma análise preliminar sem compromisso e indicamos se há potencial de crédito e uma estimativa de recuperação antes de qualquer contratação.</div></details>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final">
+  <div class="wrap">
+    <div class="eyebrow" style="color:var(--gold-bright)">Cada mês que passa, um crédito prescreve</div>
+    <h2>Descubra hoje quanto de ICMS sua indústria pode recuperar.</h2>
+    <p>Fale agora com um engenheiro eletricista da Amper Energia. Análise inicial gratuita e sem compromisso.</p>
+    <div class="hero-cta">
+      <a class="btn btn-wa" href="#" data-wa="Ol%C3%A1!%20Quero%20o%20diagn%C3%B3stico%20do%20cr%C3%A9dito%20de%20ICMS%20da%20minha%20ind%C3%BAstria.">
+        <svg class="wa-ico" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 3C9.4 3 4 8.3 4 14.9c0 2.3.6 4.4 1.8 6.3L4 29l8-2.1c1.8 1 3.9 1.5 6 1.5 6.6 0 12-5.3 12-11.9S22.6 3 16 3zm0 21.8c-1.9 0-3.7-.5-5.3-1.5l-.4-.2-4.7 1.2 1.3-4.6-.3-.4a9.6 9.6 0 01-1.5-5.1C5 9.4 9.9 4.9 16 4.9s11 4.5 11 10c0 5.6-4.9 9.9-11 9.9zm5.5-7.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4 0-.5s-.7-1.7-1-2.3c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.3z"/></svg>
+        Chamar no WhatsApp (48) 98802-4167
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="brand" style="color:var(--on-hero)"><span class="mark">A</span><span style="color:var(--on-hero)">Amper Energia<small style="color:#7c9093">Engenharia Elétrica &amp; Laudos Técnicos</small></span></div>
+        <p style="margin-top:14px;max-width:34ch">Rua Tiradentes, 18 — Sala 201 · São José / SC · CEP 88102-040</p>
+      </div>
+      <div>
+        <b>Contato</b>
+        <p style="margin-top:10px">WhatsApp: <a href="#" data-wa="Ol%C3%A1!%20Vim%20pela%20p%C3%A1gina%20do%20cr%C3%A9dito%20de%20ICMS.">(48) 98802-4167</a><br>CNPJ 24.848.894/0001-32<br>RT: Amilcare Augusto — CREA-SC 17.115-9</p>
+      </div>
+    </div>
+    <p class="disc">Conteúdo informativo. A existência, o percentual e o montante do crédito de ICMS dependem da análise técnica de cada instalação (laudo com ART) e da avaliação contábil/jurídica de cada empresa, observada a legislação vigente (LC 87/1996 e normas estaduais). Os valores exibidos nesta página são ilustrativos e não constituem promessa de resultado.</p>
+  </div>
+</footer>
+
+<a class="float-wa" href="#" data-wa="Ol%C3%A1!%20Vim%20pela%20p%C3%A1gina%20do%20cr%C3%A9dito%20de%20ICMS%20e%20quero%20falar%20com%20um%20engenheiro.">
+  <svg class="wa-ico" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 3C9.4 3 4 8.3 4 14.9c0 2.3.6 4.4 1.8 6.3L4 29l8-2.1c1.8 1 3.9 1.5 6 1.5 6.6 0 12-5.3 12-11.9S22.6 3 16 3zm0 21.8c-1.9 0-3.7-.5-5.3-1.5l-.4-.2-4.7 1.2 1.3-4.6-.3-.4a9.6 9.6 0 01-1.5-5.1C5 9.4 9.9 4.9 16 4.9s11 4.5 11 10c0 5.6-4.9 9.9-11 9.9zm5.5-7.4c-.3-.2-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4 0-.5s-.7-1.7-1-2.3c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.6-.3z"/></svg>
+  <span class="t">WhatsApp</span>
+</a>
+
+<script>
+(function(){
+  var PHONE = "5548988024167";
+  var base = "https://wa.me/" + PHONE + "?text=";
+
+  // Simple CTA links with predefined message
+  document.querySelectorAll("[data-wa]").forEach(function(a){
+    a.addEventListener("click", function(e){
+      e.preventDefault();
+      window.open(base + a.getAttribute("data-wa"), "_blank", "noopener");
+    });
+  });
+
+  // Lead form -> WhatsApp with filled data
+  var form = document.getElementById("leadForm");
+  function fieldEl(id){ return document.getElementById(id).closest(".field"); }
+  function setInvalid(id, bad){ fieldEl(id).classList.toggle("invalid", bad); }
+
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    var nome = document.getElementById("nome").value.trim();
+    var empresa = document.getElementById("empresa").value.trim();
+    var whats = document.getElementById("whats").value.trim();
+    var cidade = document.getElementById("cidade").value.trim();
+    var conta = document.getElementById("conta").value;
+    var seg = document.getElementById("segmento").value.trim();
+
+    var digits = whats.replace(/\D/g,"");
+    var ok = true;
+    if(!nome){ setInvalid("nome",true); ok=false; } else setInvalid("nome",false);
+    if(!empresa){ setInvalid("empresa",true); ok=false; } else setInvalid("empresa",false);
+    if(digits.length < 10){ setInvalid("whats",true); ok=false; } else setInvalid("whats",false);
+    if(!conta){ setInvalid("conta",true); ok=false; } else setInvalid("conta",false);
+    if(!ok){
+      var first = form.querySelector(".field.invalid input, .field.invalid select");
+      if(first) first.focus();
+      return;
+    }
+
+    var msg = "Olá! Quero o diagnóstico de crédito de ICMS sobre energia.%0A%0A";
+    msg += "*Nome:* " + encodeURIComponent(nome) + "%0A";
+    msg += "*Empresa:* " + encodeURIComponent(empresa) + "%0A";
+    msg += "*WhatsApp:* " + encodeURIComponent(whats) + "%0A";
+    if(cidade) msg += "*Cidade/UF:* " + encodeURIComponent(cidade) + "%0A";
+    msg += "*Conta média de energia:* " + encodeURIComponent(conta) + "%0A";
+    if(seg) msg += "*Segmento:* " + encodeURIComponent(seg) + "%0A";
+    msg += "%0AVim pela landing page do laudo de crédito de ICMS.";
+
+    window.open(base + msg, "_blank", "noopener");
+  });
+
+  // Reveal on scroll
+  if("IntersectionObserver" in window && !window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); } });
+    }, {threshold:.14});
+    document.querySelectorAll(".reveal").forEach(function(el){ io.observe(el); });
+  } else {
+    document.querySelectorAll(".reveal").forEach(function(el){ el.classList.add("in"); });
+  }
+})();
+</script>
+</body>
+</html>
