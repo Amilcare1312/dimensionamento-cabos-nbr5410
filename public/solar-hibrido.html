@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dimensionamento FV Híbrido</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#fff; --ink:#1c2430; --muted:#5b6675; --line:#e3e7ee;
+    --brand:#f5a623; --brand-ink:#7a4e00; --ok:#1a7f4b; --warn:#9a6b00; --err:#b3261e;
+    --ok-bg:#e6f4ec; --warn-bg:#fdf3dd; --err-bg:#fbe9e7; --info-bg:#e8f0fe; --info:#1a4fb3;
+    --accent:#2b6cb0;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#0f1420; --card:#171d2b; --ink:#e8ecf3; --muted:#9aa6b8; --line:#28303f;
+      --ok-bg:#12301f; --warn-bg:#332800; --err-bg:#3a1512; --info-bg:#0f2136; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  header{background:linear-gradient(120deg,#f5a623,#e08c00);color:#241500;padding:22px 18px}
+  header h1{margin:0;font-size:22px}
+  header p{margin:4px 0 0;font-size:13px;opacity:.85}
+  .wrap{max-width:1080px;margin:0 auto;padding:18px}
+  .grid{display:grid;gap:16px}
+  @media(min-width:860px){.cols{grid-template-columns:1fr 1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
+  .card h2{margin:0 0 12px;font-size:16px;display:flex;align-items:center;gap:8px}
+  label{display:block;font-size:12px;color:var(--muted);margin:8px 0 3px}
+  input,select{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;
+    background:var(--card);color:var(--ink);font-size:14px}
+  input:focus,select:focus{outline:2px solid var(--brand);border-color:transparent}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row>div{flex:1;min-width:120px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  thead th{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.03em}
+  .cargas td{padding:4px}
+  .cargas input[type=text]{min-width:110px}
+  .cargas input[type=number]{width:90px}
+  .btn{display:inline-flex;align-items:center;gap:6px;cursor:pointer;border:none;border-radius:8px;
+    padding:9px 14px;font-size:14px;font-weight:600}
+  .btn-primary{background:var(--brand);color:#241500}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+  .btn-sm{padding:5px 9px;font-size:12px}
+  .btn:hover{filter:brightness(.96)}
+  .metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(min-width:720px){.metrics{grid-template-columns:repeat(4,1fr)}}
+  .metric{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .metric .lbl{font-size:12px;color:var(--muted)}
+  .metric .val{font-size:22px;font-weight:700;margin:4px 0 2px}
+  .metric .sub{font-size:11px;color:var(--muted)}
+  .alert{padding:10px 12px;border-radius:8px;margin:6px 0;font-size:13px}
+  .alert.erro{background:var(--err-bg);color:var(--err)}
+  .alert.aviso{background:var(--warn-bg);color:var(--warn)}
+  .alert.info{background:var(--info-bg);color:var(--info)}
+  details{border:1px solid var(--line);border-radius:8px;margin:6px 0;overflow:hidden}
+  details>summary{cursor:pointer;padding:8px 12px;font-weight:600;font-size:13px;background:rgba(127,127,127,.06)}
+  details .body{padding:8px 12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;white-space:pre-wrap}
+  .muted{color:var(--muted);font-size:12px}
+  .hidden{display:none}
+  .chart{width:100%;height:210px}
+  .chart .bar{fill:var(--brand)}
+  .chart .bar.crit{fill:var(--accent)}
+  .chart text{fill:var(--muted);font-size:10px}
+  .footer{color:var(--muted);font-size:12px;text-align:center;padding:20px}
+  .pill{display:inline-block;background:var(--brand);color:#241500;border-radius:999px;padding:1px 8px;font-size:11px;font-weight:700}
+  @media print{
+    header,.no-print{display:none!important}
+    body{background:#fff}
+    .card{break-inside:avoid;border-color:#ccc}
+    details[open] .body,details .body{display:block!important}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>🔋 Dimensionamento de Sistema Fotovoltaico Híbrido</h1>
+  <p>On-grid com banco de baterias e backup de cargas prioritárias · roda 100% no navegador, sem instalação.</p>
+</header>
+
+<div class="wrap">
+
+  <!-- Aviso de escopo -->
+  <div class="card" style="border-left:4px solid var(--brand)">
+    <span class="muted">
+      <b>Escopo:</b> baterias e inversor dimensionados só para as <b>cargas críticas</b> (backup no blackout);
+      o gerador FV cobre o <b>consumo total da fatura</b>. Catálogo genérico (kWh/kWp/kW). Ferramenta de apoio —
+      valide sempre com projeto de engenharia.
+    </span>
+  </div>
+
+  <div class="grid cols">
+    <!-- 1. Fatura -->
+    <div class="card">
+      <h2>1️⃣ Fatura de energia</h2>
+      <div class="row">
+        <div><label>Distribuidora</label><input id="distribuidora" type="text" placeholder="ex.: CELESC"></div>
+        <div><label>Classe tarifária</label>
+          <select id="classe"><option>B</option><option>A</option></select></div>
+      </div>
+      <div class="row">
+        <div><label>UF</label><select id="uf"></select></div>
+        <div><label>Cidade</label><input id="cidade" type="text"></div>
+      </div>
+      <div>
+        <label>Tensão de fornecimento</label>
+        <select id="tensao_forn">
+          <option>Monofásico 127V</option><option selected>Bifásico 220V</option>
+          <option>Trifásico 220V</option><option>Trifásico 380V</option>
+        </select>
+      </div>
+      <label style="margin-top:12px">Consumo mensal (kWh) — últimos 12 meses</label>
+      <div id="consumos" class="row" style="gap:6px"></div>
+      <p class="muted" id="consumoMedio"></p>
+    </div>
+
+    <!-- Parâmetros -->
+    <div class="card">
+      <h2>⚙️ Parâmetros de projeto</h2>
+      <div class="row">
+        <div><label>Tipo de bateria</label>
+          <select id="tipo_bateria">
+            <option value="litio">Lítio (LiFePO4)</option>
+            <option value="chumbo">Chumbo-ácido</option>
+          </select></div>
+        <div><label>DoD (profundidade de descarga)</label><input id="dod" type="number" step="0.05" value="0.80"></div>
+      </div>
+      <div class="row">
+        <div><label>Autonomia (dias)</label><input id="autonomia" type="number" step="0.25" value="1"></div>
+        <div><label>Tensão do banco (V)</label>
+          <select id="tensao_banco"><option>12</option><option>24</option><option selected>48</option></select></div>
+      </div>
+      <div class="row">
+        <div><label>Eficiência do sistema</label><input id="efic_sistema" type="number" step="0.01" value="0.92"></div>
+        <div><label>Fator de simultaneidade</label><input id="fsimult" type="number" step="0.05" value="0.70"></div>
+      </div>
+      <div class="row">
+        <div><label>Potência do módulo (Wp)</label><input id="pot_modulo" type="number" step="5" value="550"></div>
+        <div><label>Eficiência do módulo</label><input id="efic_modulo" type="number" step="0.005" value="0.21"></div>
+      </div>
+      <div class="row">
+        <div><label>Performance ratio (PR)</label><input id="pr" type="number" step="0.01" value="0.78"></div>
+        <div><label>Margem do inversor</label><input id="margem" type="number" step="0.05" value="0.25"></div>
+      </div>
+      <div class="row">
+        <div><label>Critério de HSP</label>
+          <select id="criterio_hsp">
+            <option value="mes_critico">Mês crítico (conservador)</option>
+            <option value="media_anual">Média anual</option>
+          </select></div>
+        <div><label>O FV deve cobrir</label>
+          <select id="criterio_fv">
+            <option value="consumo_total">Consumo total da fatura</option>
+            <option value="consumo_mais_recarga">Consumo total + recarga do banco</option>
+          </select></div>
+      </div>
+      <div class="row">
+        <div><label>Unidade de bateria (kWh)</label><input id="cap_unid" type="number" step="0.01" value="5.12"></div>
+        <div><label>Tensão da unidade (V)</label><input id="tensao_unid" type="number" step="0.1" value="51.2"></div>
+      </div>
+      <div><label>Área disponível (m²) — opcional</label><input id="area" type="number" step="1" value="0"></div>
+    </div>
+  </div>
+
+  <!-- 2. Cargas -->
+  <div class="card">
+    <h2>2️⃣ Cargas prioritárias</h2>
+    <p class="muted">Marque <b>Crítica</b> no que precisa funcionar no blackout (essas cargas dimensionam as baterias).
+      Surto = potência de partida de motores/bombas (deixe 0 se não houver).</p>
+    <table class="cargas">
+      <thead><tr>
+        <th>Equipamento</th><th>Potência (W)</th><th>Surto (W)</th><th>Horas/dia</th><th>Qtd</th><th>Crítica</th><th></th>
+      </tr></thead>
+      <tbody id="cargasBody"></tbody>
+    </table>
+    <button class="btn btn-ghost btn-sm no-print" id="addCarga" style="margin-top:10px">➕ Adicionar carga</button>
+  </div>
+
+  <!-- Ações -->
+  <div class="card no-print">
+    <label style="display:flex;align-items:center;gap:8px;margin:0 0 10px">
+      <input type="checkbox" id="usarApi" checked style="width:auto"> Consultar irradiação online (NASA POWER) — desmarque para usar a base local por estado
+    </label>
+    <button class="btn btn-primary" id="calcular">📐 Calcular dimensionamento</button>
+    <span class="muted" id="statusCalc" style="margin-left:10px"></span>
+  </div>
+
+  <!-- Resultados -->
+  <div id="resultados" class="hidden">
+    <div id="alertas"></div>
+
+    <div class="card">
+      <h2>📊 Resumo executivo</h2>
+      <div class="metrics" id="metrics"></div>
+    </div>
+
+    <div class="grid cols">
+      <div class="card">
+        <h2>☀️ Irradiação mensal (HSP)</h2>
+        <svg class="chart" id="chartHsp" viewBox="0 0 480 210" preserveAspectRatio="none"></svg>
+        <p class="muted" id="hspInfo"></p>
+      </div>
+      <div class="card">
+        <h2>🔌 Cargas prioritárias</h2>
+        <table><thead><tr><th>Equipamento</th><th>Pot. (W)</th><th>h/dia</th><th>Wh/dia</th><th>Crít.</th></tr></thead>
+          <tbody id="tabCargas"></tbody></table>
+        <p class="muted" id="totCargas"></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🧮 Memorial de cálculo</h2>
+      <div id="memorial"></div>
+    </div>
+
+    <div class="card no-print">
+      <h2>📄 Exportar relatório</h2>
+      <button class="btn btn-ghost" id="btnImprimir">🖨️ Imprimir / Salvar em PDF</button>
+      <button class="btn btn-ghost" id="btnDoc">⬇️ Baixar .doc (Word)</button>
+      <p class="muted">O PDF é gerado pela função de impressão do navegador (escolha “Salvar como PDF”).</p>
+    </div>
+  </div>
+
+  <div class="footer">
+    Dimensionamento FV Híbrido · versão web · abre offline por duplo-clique.
+  </div>
+</div>
+
+<script type="module">
+/* ============================ NÚCLEO DE CÁLCULO ============================ */
+/* Porte fiel do backend Python; validado no Node contra os mesmos casos.     */
+const HSP_ANUAL_UF={AC:4.6,AL:5.6,AP:5.0,AM:4.5,BA:5.6,CE:5.8,DF:5.4,ES:5.2,GO:5.4,MA:5.4,MT:5.3,MS:5.3,MG:5.4,PA:4.9,PB:5.7,PR:4.8,PE:5.6,PI:5.7,RJ:5.1,RN:5.9,RS:4.9,RO:4.8,RR:4.9,SC:4.6,SP:5.0,SE:5.6,TO:5.4};
+const CAPITAL_UF={AC:"Rio Branco",AL:"Maceió",AP:"Macapá",AM:"Manaus",BA:"Salvador",CE:"Fortaleza",DF:"Brasília",ES:"Vitória",GO:"Goiânia",MA:"São Luís",MT:"Cuiabá",MS:"Campo Grande",MG:"Belo Horizonte",PA:"Belém",PB:"João Pessoa",PR:"Curitiba",PE:"Recife",PI:"Teresina",RJ:"Rio de Janeiro",RN:"Natal",RS:"Porto Alegre",RO:"Porto Velho",RR:"Boa Vista",SC:"Florianópolis",SP:"São Paulo",SE:"Aracaju",TO:"Palmas"};
+const UF_EQUATORIAIS=new Set(["AC","AM","AP","PA","RR","RO","MA","PI","CE","RN","PB","PE","AL","SE","BA","TO"]);
+const FORMA_SUL=[1.20,1.15,1.10,1.00,0.85,0.78,0.82,0.95,1.00,1.10,1.15,1.20];
+const FORMA_EQ=[0.95,0.92,0.95,0.95,1.00,1.03,1.08,1.10,1.08,1.05,1.00,0.95];
+const PARAMETROS_BATERIA={litio:{dod:0.80,eficiencia:0.95},chumbo:{dod:0.50,eficiencia:0.85}};
+const MESES=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+
+const norm=f=>{const m=f.reduce((a,b)=>a+b,0)/f.length;return f.map(v=>v/m);};
+function perfilMensalUF(uf){uf=(uf||"").toUpperCase().trim();let a=HSP_ANUAL_UF[uf];
+  if(a===undefined){const v=Object.values(HSP_ANUAL_UF);a=v.reduce((x,y)=>x+y,0)/v.length;}
+  const f=norm(UF_EQUATORIAIS.has(uf)?FORMA_EQ:FORMA_SUL);return f.map(x=>Math.round(a*x*1000)/1000);}
+function irradiacaoFallback(uf){const m=perfilMensalUF(uf);
+  return{hsp_mensal:m,hsp_media_anual:Math.round(m.reduce((a,b)=>a+b,0)/12*1000)/1000,fonte:"Tabela local (fallback)"};}
+const hspMesCritico=irr=>irr.hsp_mensal.length?Math.min(...irr.hsp_mensal):irr.hsp_media_anual;
+const hspParaCriterio=(irr,c)=>c==="mes_critico"?hspMesCritico(irr):irr.hsp_media_anual;
+
+const potTot=c=>c.potencia_w*c.quantidade;
+const surtoTot=c=>(c.potencia_surto_w?c.potencia_surto_w:c.potencia_w)*c.quantidade;
+const enDia=c=>potTot(c)*c.horas_dia;
+
+function energiaDiariaCriticas(cargas,fs){return cargas.filter(c=>c.critica).reduce((s,c)=>s+enDia(c),0)*fs;}
+function dimensionarBaterias(cargas,p){
+  const dod=p.dod??PARAMETROS_BATERIA[p.tipo_bateria].dod;
+  const efic=p.eficiencia_bateria??PARAMETROS_BATERIA[p.tipo_bateria].eficiencia;
+  const ed=energiaDiariaCriticas(cargas,p.fator_simultaneidade);
+  const cutil=ed*p.autonomia_dias/p.eficiencia_sistema;
+  const cnom=cutil/dod;
+  const cah=p.tensao_banco_v?cnom/p.tensao_banco_v:0;
+  const cu=p.capacidade_unidade_bateria_wh;
+  const nCap=cu?Math.max(1,Math.ceil(cnom/cu)):0;
+  let serie=1; if(p.tensao_unidade_bateria_v) serie=Math.max(1,Math.round(p.tensao_banco_v/p.tensao_unidade_bateria_v));
+  const paralelo=Math.max(1,Math.ceil(nCap/serie)); const tot=serie*paralelo;
+  return{energia_diaria_wh:ed,capacidade_util_wh:cutil,capacidade_nominal_wh:cnom,capacidade_nominal_ah:cah,
+    dod,eficiencia:efic,tensao_banco_v:p.tensao_banco_v,autonomia_dias:p.autonomia_dias,
+    num_unidades:tot,capacidade_unidade_wh:cu,unidades_serie:serie,unidades_paralelo:paralelo,
+    capacidade_banco_comercial_wh:tot*cu};
+}
+const areaPorPotencia=(wp,e)=>e<=0?0:wp/(1000*e);
+function dimensionarFV(fatura,p,irr,bat){
+  const cm=fatura.consumos_mensais_kwh.length?fatura.consumos_mensais_kwh.reduce((a,b)=>a+b,0)/fatura.consumos_mensais_kwh.length:0;
+  const cd=cm/30*1000;
+  let rec=0; if(p.criterio_fv==="consumo_mais_recarga"&&bat) rec=bat.capacidade_util_wh;
+  const eger=(cd+rec)/p.eficiencia_sistema;
+  const hsp=hspParaCriterio(irr,p.criterio_hsp);
+  let pfv=0; if(hsp>0&&p.performance_ratio>0) pfv=eger/hsp/p.performance_ratio;
+  const nmod=p.potencia_modulo_wp?Math.max(1,Math.ceil(pfv/p.potencia_modulo_wp)):0;
+  const inst=nmod*p.potencia_modulo_wp;
+  return{consumo_diario_wh:cd,energia_recarga_wh:rec,geracao_diaria_necessaria_wh:eger,hsp_utilizado:hsp,
+    performance_ratio:p.performance_ratio,potencia_fv_necessaria_wp:pfv,num_modulos:nmod,
+    potencia_modulo_wp:p.potencia_modulo_wp,potencia_fv_instalada_wp:inst,
+    area_estimada_m2:areaPorPotencia(inst,p.eficiencia_modulo),criterio_fv:p.criterio_fv,
+    geracao_diaria_estimada_wh:inst*hsp*p.performance_ratio,consumo_medio_mensal:cm};
+}
+const potAtivaSim=(c,fs)=>c.reduce((s,x)=>s+potTot(x),0)*fs;
+function picoPartida(cargas){const reg=cargas.reduce((s,c)=>s+potTot(c),0);let m=0;
+  for(const c of cargas){const a=surtoTot(c)-potTot(c);if(a>m)m=a;}return reg+m;}
+function dimensionarInversor(cargas,p,inst=0){
+  const ps=potAtivaSim(cargas,p.fator_simultaneidade);const pm=ps*(1+p.margem_inversor);
+  const pico=picoPartida(cargas);const pf=p.fdi_max?inst/p.fdi_max:0;const pn=Math.max(pm,pf);
+  return{potencia_ativa_simultanea_w:ps,potencia_com_margem_w:pm,pico_partida_w:pico,
+    potencia_por_fv_w:pf,potencia_nominal_recomendada_w:pn,potencia_surto_requerida_w:pico,
+    margem:p.margem_inversor,faixa_fdi:[p.fdi_min,p.fdi_max],tensao_banco_v:p.tensao_banco_v};
+}
+function validarEntradas(fatura,cargas,p){const a=[];
+  if(!cargas.length)a.push({nivel:"erro",texto:"Nenhuma carga prioritária foi cadastrada."});
+  if(!cargas.some(c=>c.critica))a.push({nivel:"aviso",texto:"Nenhuma carga marcada como crítica — o banco de baterias ficará em zero."});
+  const m=fatura.consumos_mensais_kwh.length?fatura.consumos_mensais_kwh.reduce((x,y)=>x+y,0)/fatura.consumos_mensais_kwh.length:0;
+  if(m<=0)a.push({nivel:"erro",texto:"Consumo mensal da fatura não informado — o gerador FV não pode ser dimensionado."});
+  const dod=p.dod??PARAMETROS_BATERIA[p.tipo_bateria].dod;
+  if(!(p.eficiencia_sistema>0&&p.eficiencia_sistema<=1))a.push({nivel:"erro",texto:"Eficiência do sistema deve estar entre 0 e 1."});
+  if(!(dod>0&&dod<=1))a.push({nivel:"erro",texto:"DoD deve estar entre 0 e 1."});
+  if(p.autonomia_dias<=0)a.push({nivel:"erro",texto:"Autonomia deve ser maior que zero."});
+  else if(p.autonomia_dias>5)a.push({nivel:"aviso",texto:`Autonomia de ${p.autonomia_dias} dias é elevada e encarece muito o banco — revise.`});
+  return a;}
+function validarResultados(fatura,bat,fv){const a=[];
+  const m=fatura.consumos_mensais_kwh.length?fatura.consumos_mensais_kwh.reduce((x,y)=>x+y,0)/fatura.consumos_mensais_kwh.length:0;
+  const cd=m/30*1000;
+  if(cd>0&&bat.energia_diaria_wh>cd)a.push({nivel:"aviso",texto:`A energia diária das cargas críticas (${(bat.energia_diaria_wh/1000).toFixed(1)} kWh/dia) é MAIOR que o consumo médio diário da fatura (${(cd/1000).toFixed(1)} kWh/dia). Verifique potências/horas.`});
+  if(fv.geracao_diaria_estimada_wh<0.9*fv.geracao_diaria_necessaria_wh)a.push({nivel:"info",texto:"Geração estimada abaixo da necessidade — considere módulo de maior potência ou revise o PR."});
+  return a;}
+function validarArea(fv,area){const a=[];
+  if(area&&area>0&&fv.area_estimada_m2>area)a.push({nivel:"aviso",texto:`Área estimada (${fv.area_estimada_m2.toFixed(1)} m²) excede a área disponível (${area.toFixed(1)} m²).`});
+  return a;}
+
+/* --------- Irradiação online (NASA POWER) com fallback local --------- */
+async function geocodificar(cidade,uf){
+  const q=encodeURIComponent(`${cidade}, ${uf}, Brasil`);
+  const url=`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1&countrycodes=br`;
+  const r=await fetch(url,{headers:{"Accept":"application/json"}});
+  if(!r.ok)throw new Error("geocode");
+  const d=await r.json(); if(!d.length)throw new Error("cidade");
+  return[parseFloat(d[0].lat),parseFloat(d[0].lon)];
+}
+async function hspNasa(lat,lon){
+  const url=`https://power.larc.nasa.gov/api/temporal/climatology/point?parameters=ALLSKY_SFC_SW_DWN&community=RE&latitude=${lat}&longitude=${lon}&format=JSON`;
+  const r=await fetch(url); if(!r.ok)throw new Error("nasa");
+  const d=await r.json();
+  const p=d.properties.parameter.ALLSKY_SFC_SW_DWN;
+  const k=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+  const mensal=k.map(x=>Number(p[x]));
+  if(mensal.some(v=>!isFinite(v)||v<0))throw new Error("valores");
+  const ann=p.ANN!=null&&p.ANN!==-999?Number(p.ANN):mensal.reduce((a,b)=>a+b,0)/12;
+  return{hsp_mensal:mensal.map(v=>Math.round(v*1000)/1000),hsp_media_anual:Math.round(ann*1000)/1000,
+    fonte:"NASA POWER",latitude:lat,longitude:lon};
+}
+async function obterIrradiacao(cidade,uf,usarApi){
+  if(usarApi){
+    try{const[la,lo]=await geocodificar(cidade,uf);return await hspNasa(la,lo);}
+    catch(e){/* CORS/offline/cidade — cai para tabela local */}
+  }
+  return irradiacaoFallback(uf);
+}
+
+/* ============================ FORMATAÇÃO ============================ */
+const nf=(v,c=1)=>Number(v).toLocaleString("pt-BR",{minimumFractionDigits:c,maximumFractionDigits:c});
+
+/* ============================ MEMORIAL ============================ */
+function montarMemorial(fatura,cargas,p,irr,bat,fv,inv){
+  const hsp=fv.hsp_utilizado;
+  const critHsp=p.criterio_hsp==="mes_critico"?"mês crítico":"média anual";
+  const resumo=[
+    `Potência FV: ${nf(fv.potencia_fv_instalada_wp/1000,2)} kWp (${fv.num_modulos} módulos de ${nf(p.potencia_modulo_wp,0)} Wp)`,
+    `Banco de baterias: ${nf(bat.capacidade_banco_comercial_wh/1000,2)} kWh (${nf(bat.capacidade_nominal_ah,0)} Ah @ ${bat.tensao_banco_v} V)`,
+    `Inversor híbrido: ${nf(inv.potencia_nominal_recomendada_w/1000,2)} kW (surto ≥ ${nf(inv.potencia_surto_requerida_w/1000,2)} kW)`,
+    `Irradiação (HSP ${critHsp}): ${nf(hsp,2)} kWh/m²/dia — fonte: ${irr.fonte}`,
+  ];
+  const critFv=fv.criterio_fv==="consumo_total"?"consumo total da fatura":"consumo total + recarga do banco";
+  const secoes=[
+    {t:"1. Dados de entrada",l:[
+      `Distribuidora: ${fatura.distribuidora||"—"} | Classe: ${fatura.classe} | Tensão: ${fatura.tensao_forn||"—"}`,
+      `Local: ${fatura.cidade||"—"}/${fatura.uf||"—"}`,
+      `Consumo médio mensal: ${nf(fv.consumo_medio_mensal)} kWh (${nf(fv.consumo_medio_mensal/30,2)} kWh/dia)`,
+      `Cargas prioritárias: ${cargas.length} (${cargas.filter(c=>c.critica).length} críticas)`]},
+    {t:"2. Irradiação solar (HSP)",l:[
+      `Fonte: ${irr.fonte}`,
+      "HSP mensal (kWh/m²/dia): "+MESES.map((m,i)=>`${m}=${nf(irr.hsp_mensal[i],2)}`).join(", "),
+      `Média anual: ${nf(irr.hsp_media_anual,2)} | Mês crítico: ${nf(hspMesCritico(irr),2)} | Critério: ${critHsp} (${nf(hsp,2)})`]},
+    {t:"3. Banco de baterias (backup das cargas críticas)",l:[
+      "Fórmula: E_dia = Σ(P × qtd × h) × f_simult",
+      `  E_dia = ${nf(bat.energia_diaria_wh,0)} Wh/dia (${nf(bat.energia_diaria_wh/1000,2)} kWh/dia); f_simult = ${p.fator_simultaneidade}`,
+      "Fórmula: C_util = E_dia × autonomia / η_sistema",
+      `  C_util = ${nf(bat.energia_diaria_wh,0)} × ${p.autonomia_dias} / ${p.eficiencia_sistema} = ${nf(bat.capacidade_util_wh,0)} Wh`,
+      "Fórmula: C_nom = C_util / DoD",
+      `  C_nom = ${nf(bat.capacidade_util_wh,0)} / ${bat.dod} = ${nf(bat.capacidade_nominal_wh,0)} Wh (${nf(bat.capacidade_nominal_wh/1000,2)} kWh)`,
+      `Conversão para Ah: ${nf(bat.capacidade_nominal_wh,0)} Wh / ${bat.tensao_banco_v} V = ${nf(bat.capacidade_nominal_ah,0)} Ah`,
+      `Arranjo sugerido: ${bat.num_unidades} unidade(s) de ${nf(bat.capacidade_unidade_wh/1000,2)} kWh (${bat.unidades_serie} série × ${bat.unidades_paralelo} paralelo) = ${nf(bat.capacidade_banco_comercial_wh/1000,2)} kWh`]},
+    {t:"4. Gerador fotovoltaico",l:[
+      `Critério: ${critFv}`,
+      `Consumo diário: ${nf(fv.consumo_diario_wh,0)} Wh/dia`+(fv.energia_recarga_wh?` + recarga ${nf(fv.energia_recarga_wh,0)} Wh`:""),
+      "Fórmula: E_ger = (consumo + recarga) / η_sistema",
+      `  E_ger = ${nf(fv.geracao_diaria_necessaria_wh,0)} Wh/dia`,
+      "Fórmula: P_fv = E_ger / HSP / PR",
+      `  P_fv = ${nf(fv.geracao_diaria_necessaria_wh,0)} / ${nf(hsp,2)} / ${fv.performance_ratio} = ${nf(fv.potencia_fv_necessaria_wp,0)} Wp`,
+      `Nº de módulos = ⌈P_fv / P_módulo⌉ = ⌈${nf(fv.potencia_fv_necessaria_wp,0)} / ${nf(fv.potencia_modulo_wp,0)}⌉ = ${fv.num_modulos}`,
+      `Potência instalada: ${nf(fv.potencia_fv_instalada_wp,0)} Wp (${nf(fv.potencia_fv_instalada_wp/1000,2)} kWp)`,
+      `Área estimada: ${nf(fv.area_estimada_m2,1)} m² (η_módulo = ${Math.round(p.eficiencia_modulo*100)}%)`,
+      `Geração diária estimada: ${nf(fv.geracao_diaria_estimada_wh/1000,1)} kWh/dia`]},
+    {t:"5. Inversor híbrido",l:[
+      "Fórmula: P_sim = Σ(P_ativa × qtd) × f_simult",
+      `  P_sim = ${nf(inv.potencia_ativa_simultanea_w,0)} W`,
+      `Com margem de ${Math.round(inv.margem*100)}%: ${nf(inv.potencia_com_margem_w,0)} W`,
+      "Pico de partida = Σ(P_regime) + max(surto_i − regime_i)",
+      `  Pico = ${nf(inv.pico_partida_w,0)} W`,
+      `Mínimo para acomodar a FV (P_fv / FDI_max = ${inv.faixa_fdi[1]}): ${nf(inv.potencia_por_fv_w,0)} W`,
+      `Potência nominal recomendada: ${nf(inv.potencia_nominal_recomendada_w,0)} W (${nf(inv.potencia_nominal_recomendada_w/1000,2)} kW)`,
+      `Capacidade de surto requerida: ≥ ${nf(inv.potencia_surto_requerida_w,0)} W`,
+      `Tensão de entrada do banco: ${inv.tensao_banco_v} V`]},
+  ];
+  return{resumo,secoes};
+}
+
+/* ============================ UI ============================ */
+const $=id=>document.getElementById(id);
+const ufSel=$("uf");
+Object.keys(CAPITAL_UF).sort().forEach(u=>{const o=document.createElement("option");o.value=u;o.textContent=u;ufSel.appendChild(o);});
+ufSel.value="SC"; $("cidade").value=CAPITAL_UF["SC"];
+ufSel.addEventListener("change",()=>{$("cidade").value=CAPITAL_UF[ufSel.value]||"";});
+
+// consumos (12 meses)
+const consWrap=$("consumos");
+function renderConsumos(vals){
+  consWrap.innerHTML="";
+  MESES.forEach((m,i)=>{
+    const d=document.createElement("div");d.style.minWidth="70px";
+    d.innerHTML=`<label style="margin:0">${m}</label><input type="number" step="1" value="${vals[i]}" data-mes="${i}">`;
+    consWrap.appendChild(d);
+  });
+  consWrap.querySelectorAll("input").forEach(inp=>inp.addEventListener("input",atualizaMedia));
+  atualizaMedia();
+}
+function lerConsumos(){return[...consWrap.querySelectorAll("input")].map(i=>parseFloat(i.value)||0);}
+function atualizaMedia(){const v=lerConsumos();const m=v.reduce((a,b)=>a+b,0)/v.length;
+  $("consumoMedio").textContent=`Consumo médio: ${nf(m,0)} kWh/mês (${nf(m/30,1)} kWh/dia)`;}
+renderConsumos(Array(12).fill(300));
+
+// cargas
+const cargasBody=$("cargasBody");
+function addCarga(c={nome:"",pot:100,surto:0,horas:5,qtd:1,crit:true}){
+  const tr=document.createElement("tr");
+  tr.innerHTML=`
+    <td><input type="text" value="${c.nome}"></td>
+    <td><input type="number" step="10" value="${c.pot}"></td>
+    <td><input type="number" step="50" value="${c.surto}"></td>
+    <td><input type="number" step="0.5" value="${c.horas}"></td>
+    <td><input type="number" step="1" value="${c.qtd}"></td>
+    <td style="text-align:center"><input type="checkbox" ${c.crit?"checked":""} style="width:auto"></td>
+    <td class="no-print"><button class="btn btn-ghost btn-sm" title="Remover">✕</button></td>`;
+  tr.querySelector("button").addEventListener("click",()=>tr.remove());
+  cargasBody.appendChild(tr);
+}
+[{nome:"Geladeira",pot:150,surto:0,horas:24,qtd:1,crit:true},
+ {nome:"Iluminação",pot:100,surto:0,horas:5,qtd:1,crit:true},
+ {nome:"Bomba d'água",pot:750,surto:2250,horas:1,qtd:1,crit:false}].forEach(addCarga);
+$("addCarga").addEventListener("click",()=>addCarga());
+
+function lerCargas(){
+  return[...cargasBody.querySelectorAll("tr")].map(tr=>{
+    const i=tr.querySelectorAll("input");
+    const surto=parseFloat(i[2].value)||0;
+    return{nome:i[0].value.trim(),potencia_w:parseFloat(i[1].value)||0,
+      potencia_surto_w:surto>0?surto:null,horas_dia:parseFloat(i[3].value)||0,
+      quantidade:parseInt(i[4].value)||1,critica:i[5].checked};
+  }).filter(c=>c.nome!=="");
+}
+function lerParametros(){
+  return{tipo_bateria:$("tipo_bateria").value,dod:parseFloat($("dod").value),
+    autonomia_dias:parseFloat($("autonomia").value),tensao_banco_v:parseInt($("tensao_banco").value),
+    eficiencia_sistema:parseFloat($("efic_sistema").value),fator_simultaneidade:parseFloat($("fsimult").value),
+    performance_ratio:parseFloat($("pr").value),potencia_modulo_wp:parseFloat($("pot_modulo").value),
+    eficiencia_modulo:parseFloat($("efic_modulo").value),margem_inversor:parseFloat($("margem").value),
+    fdi_min:1.10,fdi_max:1.30,criterio_hsp:$("criterio_hsp").value,criterio_fv:$("criterio_fv").value,
+    capacidade_unidade_bateria_wh:parseFloat($("cap_unid").value)*1000,tensao_unidade_bateria_v:parseFloat($("tensao_unid").value),
+    area_disponivel_m2:parseFloat($("area").value)||null};
+}
+function lerFatura(){
+  return{distribuidora:$("distribuidora").value,classe:$("classe").value,cidade:$("cidade").value,
+    uf:$("uf").value,tensao_forn:$("tensao_forn").value,consumos_mensais_kwh:lerConsumos()};
+}
+
+function alertHtml(a){return`<div class="alert ${a.nivel}">${a.texto}</div>`;}
+function chartHsp(irr){
+  const svg=$("chartHsp");const W=480,H=210,pad=24;const max=Math.max(...irr.hsp_mensal,1)*1.1;
+  const bw=(W-2*pad)/12;let s="";
+  irr.hsp_mensal.forEach((v,i)=>{
+    const h=(v/max)*(H-2*pad);const x=pad+i*bw+2;const y=H-pad-h;
+    s+=`<rect class="bar" x="${x}" y="${y}" width="${bw-4}" height="${h}" rx="2"/>`;
+    s+=`<text x="${x+(bw-4)/2}" y="${H-pad+12}" text-anchor="middle">${MESES[i]}</text>`;
+    s+=`<text x="${x+(bw-4)/2}" y="${y-3}" text-anchor="middle">${nf(v,1)}</text>`;
+  });
+  s+=`<line x1="${pad}" y1="${H-pad}" x2="${W-pad}" y2="${H-pad}" stroke="var(--line)"/>`;
+  svg.innerHTML=s;
+}
+
+async function calcular(){
+  const fatura=lerFatura(),cargas=lerCargas(),p=lerParametros();
+  const ent=validarEntradas(fatura,cargas,p);
+  if(ent.some(a=>a.nivel==="erro")){
+    $("resultados").classList.remove("hidden");
+    $("alertas").innerHTML=ent.map(alertHtml).join("");
+    // Mostra só os alertas; esconde os blocos de resultado até corrigir os erros.
+    document.querySelectorAll("#resultados > .card, #resultados > .grid").forEach(c=>c.style.display="none");
+    $("resultados").scrollIntoView({behavior:"smooth"});
+    return;
+  }
+  $("statusCalc").textContent="Consultando irradiação...";
+  const irr=await obterIrradiacao(fatura.cidade,fatura.uf,$("usarApi").checked);
+  const bat=dimensionarBaterias(cargas,p);
+  const fv=dimensionarFV(fatura,p,irr,bat);
+  const inv=dimensionarInversor(cargas,p,fv.potencia_fv_instalada_wp);
+  $("statusCalc").textContent="";
+
+  const alertas=[...ent,...validarResultados(fatura,bat,fv),...validarArea(fv,p.area_disponivel_m2)];
+  $("alertas").innerHTML=alertas.map(alertHtml).join("");
+
+  $("metrics").innerHTML=[
+    {lbl:"Potência FV",val:`${nf(fv.potencia_fv_instalada_wp/1000,2)} kWp`,sub:`${fv.num_modulos} módulos`},
+    {lbl:"Banco de baterias",val:`${nf(bat.capacidade_banco_comercial_wh/1000,2)} kWh`,sub:`${nf(bat.capacidade_nominal_ah,0)} Ah @ ${bat.tensao_banco_v} V`},
+    {lbl:"Inversor híbrido",val:`${nf(inv.potencia_nominal_recomendada_w/1000,2)} kW`,sub:`surto ≥ ${nf(inv.potencia_surto_requerida_w/1000,1)} kW`},
+    {lbl:"HSP utilizado",val:nf(fv.hsp_utilizado,2),sub:irr.fonte},
+  ].map(m=>`<div class="metric"><div class="lbl">${m.lbl}</div><div class="val">${m.val}</div><div class="sub">${m.sub}</div></div>`).join("");
+
+  chartHsp(irr);
+  $("hspInfo").textContent=`Fonte: ${irr.fonte} · média anual ${nf(irr.hsp_media_anual,2)} · mês crítico ${nf(hspMesCritico(irr),2)} kWh/m²/dia`;
+
+  $("tabCargas").innerHTML=cargas.map(c=>`<tr><td>${c.nome}</td><td>${nf(potTot(c),0)}</td><td>${nf(c.horas_dia,1)}</td><td>${nf(enDia(c),0)}</td><td style="text-align:center">${c.critica?"✔":"—"}</td></tr>`).join("");
+  const totDia=cargas.reduce((s,c)=>s+enDia(c),0),totCrit=cargas.filter(c=>c.critica).reduce((s,c)=>s+enDia(c),0);
+  $("totCargas").textContent=`Energia total: ${nf(totDia/1000,1)} kWh/dia · apenas críticas: ${nf(totCrit/1000,1)} kWh/dia`;
+
+  const mem=montarMemorial(fatura,cargas,p,irr,bat,fv,inv);
+  window._memorial=mem; window._resumoCtx={fatura,irr};
+  let html=`<details open><summary>Resumo executivo</summary><div class="body">`+mem.resumo.map(r=>"• "+r).join("\n")+`</div></details>`;
+  html+=mem.secoes.map(s=>`<details><summary>${s.t}</summary><div class="body">`+s.l.join("\n")+`</div></details>`).join("");
+  $("memorial").innerHTML=html;
+
+  $("resultados").classList.remove("hidden");
+  document.querySelectorAll("#resultados > .card, #resultados > .grid").forEach(c=>c.style.display="");
+  $("resultados").scrollIntoView({behavior:"smooth"});
+}
+$("calcular").addEventListener("click",()=>{calcular().catch(e=>{$("statusCalc").textContent="Erro: "+e.message;});});
+$("btnImprimir").addEventListener("click",()=>window.print());
+$("btnDoc").addEventListener("click",()=>{
+  const mem=window._memorial;if(!mem)return;
+  let body=`<h1>Memorial de cálculo — Sistema fotovoltaico híbrido</h1><h2>Resumo executivo</h2><ul>`+
+    mem.resumo.map(r=>`<li>${r}</li>`).join("")+`</ul>`;
+  mem.secoes.forEach(s=>{body+=`<h2>${s.t}</h2>`+s.l.map(l=>`<p>${l}</p>`).join("");});
+  const html=`<html xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"></head><body>${body}</body></html>`;
+  const blob=new Blob(["﻿",html],{type:"application/msword"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="relatorio_fv_hibrido.doc";a.click();
+});
+</script>
+</body>
+</html>
