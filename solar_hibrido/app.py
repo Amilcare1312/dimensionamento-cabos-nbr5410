@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import io
 import sys
+import tempfile
 from pathlib import Path
 
 import pandas as pd
@@ -346,7 +347,9 @@ def main():
     # ----------------- Exportação -----------------
     st.subheader("📄 Exportar relatório")
     col_pdf, col_docx = st.columns(2)
-    tmp = Path(st.session_state.get("_tmpdir", "."))
+    # Grava os relatórios num diretório temporário do sistema (não polui o repo
+    # nem colide entre sessões/usuários).
+    tmp = Path(tempfile.gettempdir())
     with col_pdf:
         try:
             caminho_pdf = str(tmp / "relatorio_fv_hibrido.pdf")
