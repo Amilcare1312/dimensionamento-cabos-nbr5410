@@ -1,0 +1,7 @@
+# Configuração do Streamlit para o app solar_hibrido.
+[theme]
+primaryColor = "#f5a623"
+base = "light"
+
+[browser]
+gatherUsageStats = false
