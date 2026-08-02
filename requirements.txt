@@ -1,0 +1,9 @@
+# Dependências do app Streamlit (solar_hibrido) para deploy no Streamlit
+# Community Cloud, que procura este arquivo na RAIZ do repositório.
+# As dependências de teste (pytest) ficam de fora do deploy — veja
+# solar_hibrido/requirements.txt para o ambiente de desenvolvimento.
+streamlit>=1.30
+pandas>=2.0
+pdfplumber>=0.10
+fpdf2>=2.7
+python-docx>=1.1
