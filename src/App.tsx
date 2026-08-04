@@ -1,5 +1,5 @@
-import AppFinanceiro from './financeiro/AppFinanceiro'
+import AppCRM from './crm/AppCRM'
 
 export default function App() {
-  return <AppFinanceiro />
+  return <AppCRM />
 }
